@@ -175,7 +175,7 @@ def main():
         if detailed_analysis.get('segments'):
             print("  片段分析:")
             for i, segment in enumerate(detailed_analysis['segments']):
-                print(f"    片段 {i+1} ({segment.get('language_name', '未知语言')}): "{segment.get('text', '')[:50]}..." - 风险分数: {segment.get('risk_score', 0):.2f}")
+                print(f"    片段 {i+1} ({segment.get('language_name', '未知语言')}): \"{segment.get('text', '')[:50]}...\" - 风险分数: {segment.get('risk_score', 0):.2f}")
                 if segment.get('keywords_found'):
                     print("      关键词:")
                     for kw in segment['keywords_found']:
