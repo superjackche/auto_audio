@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}课堂语义行为实时分析系统 - 登录{% endblock %}
+
+{% block head %}
+<style>
+    body {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+    .card-header {
+        background-color: #263d59;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .system-logo {
+        width: 80px;
+        height: 80px;
+        background-color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    .system-logo i {
+        font-size: 2.5rem;
+        color: #263d59;
+    }
+    .btn-primary {
+        background-color: #1e3c72;
+        border-color: #1e3c72;
+    }
+    .btn-primary:hover {
+        background-color: #2a5298;
+        border-color: #2a5298;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card">
+                <div class="card-header">
+                    <div class="system-logo">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3>课堂语义行为<br>实时分析系统</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">用户名</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="username" name="username" required autofocus>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">密码</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">登录系统</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center text-muted py-3">
+                    安全保障 · 实时分析 · 精准预警
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 移除导航栏和页脚
+    document.querySelector('nav')?.remove();
+    document.querySelector('footer')?.remove();
+</script>
+{% endblock %}

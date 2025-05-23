@@ -1,0 +1,3 @@
+admin_username: admin
+admin_password_hash: pbkdf2:sha256:260000$gQkMvRr3aO1mrwrV$e4ba51e82cc15d48f5ef4631c3c147d5576ef0775b12b52f0978c9d9e7a8f1db  # 默认密码: admin123
+session_secret_key: 7x!A%D*G-KaPdSgVkYp3s6v8y/B?E(H+

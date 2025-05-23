@@ -1,0 +1,55 @@
+# Human Rights Issues
+human rights abuses,0.9
+human rights violations,0.9
+torture,0.9
+arbitrary detention,0.9
+forced disappearance,0.9
+police brutality,0.8
+extrajudicial execution,0.9
+political prisoner,0.9
+dissident,0.8
+activist arrest,0.8
+freedom of assembly,0.8
+forced labor,0.9
+re-education camps,0.9
+detention camps,0.9
+
+# Surveillance and Privacy
+mass surveillance,0.8
+facial recognition,0.7
+privacy invasion,0.8
+surveillance state,0.8
+social credit system,0.8
+digital authoritarianism,0.8
+
+# Minority Issues
+minority oppression,0.9
+cultural genocide,0.9
+sinicization,0.8
+assimilation policy,0.8
+repression of minorities,0.9
+uyghur rights,0.9
+uyghur detention,0.9
+ethnic discrimination,0.8
+han supremacy,0.8
+ethnic cleansing,0.9
+
+# Democracy and Elections
+election fraud,0.8
+ballot tampering,0.8
+voter suppression,0.8
+democratic backsliding,0.8
+political pluralism,0.8
+multi-party system,0.8
+opposition party,0.8
+genuine democracy,0.8
+
+# Corruption and Governance
+government corruption,0.8
+elite capture,0.8
+kleptocracy,0.8
+princelings,0.8
+nepotism,0.8
+power abuse,0.8
+accountability lack,0.8
+transparency problems,0.8

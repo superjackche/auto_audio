@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+
+{% block title %}课堂语义行为实时分析系统 - 实时监控{% endblock %}
+
+{% block head %}
+<style>
+    .monitoring-container {
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+    .monitoring-header {
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .transcript-card {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 300px;
+    }
+    .transcript-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: rgba(30, 60, 114, 0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+    .transcript-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+    .transcript-item {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 3px solid #1e3c72;
+        background-color: rgba(30, 60, 114, 0.02);
+    }
+    .transcript-item:last-child {
+        margin-bottom: 0;
+    }
+    .transcript-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .transcript-text {
+        font-size: 1.1rem;
+    }
+    .risk-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .highlight {
+        background-color: rgba(255, 193, 7, 0.3);
+        padding: 0 0.2rem;
+        border-radius: 3px;
+    }
+    .risk-meter {
+        height: 100px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .gauge-container {
+        width: 200px;
+        height: 100px;
+        position: relative;
+    }
+    .gauge-background {
+        position: absolute;
+        width: 200px;
+        height: 100px;
+        background: linear-gradient(90deg, 
+            #28a745 0%, 
+            #28a745 30%, 
+            #ffc107 30%, 
+            #ffc107 60%, 
+            #fd7e14 60%, 
+            #fd7e14 80%, 
+            #dc3545 80%, 
+            #dc3545 100%);
+        border-top-left-radius: 100px;
+        border-top-right-radius: 100px;
+    }
+    .gauge-mask {
+        position: absolute;
+        width: 180px;
+        height: 90px;
+        background: white;
+        top: 10px;
+        left: 10px;
+        border-top-left-radius: 90px;
+        border-top-right-radius: 90px;
+    }
+    .gauge-needle {
+        position: absolute;
+        width: 100px;
+        height: 4px;
+        background: #343a40;
+        bottom: 0px;
+        left: 100px;
+        transform-origin: 0 50%;
+        transform: rotate(0deg);
+        transition: transform 0.5s ease-out;
+    }
+    .gauge-value {
+        position: absolute;
+        width: 100%;
+        bottom: 15px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .keyword-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .live-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #dc3545;
+        margin-right: 0.5rem;
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.4;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    .risk-factors-list {
+        max-height: 130px;
+        overflow-y: auto;
+    }
+    .risk-factors-list .list-group-item {
+        padding: 0.5rem 0.75rem;
+        border-left: 3px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- 监控标题 -->
+    <div class="monitoring-header d-flex align-items-center">
+        <div>
+            <h3 class="mb-0"><i class="bi bi-broadcast"></i> 课堂实时监控</h3>
+        </div>
+        <div class="ms-auto d-flex align-items-center">
+            <div class="d-flex align-items-center me-3">
+                <div class="live-indicator"></div>
+                <span>实时监控中</span>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="classroomDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-camera-video"></i> 教室101
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="classroomDropdown">
+                    <li><a class="dropdown-item active" href="#"><i class="bi bi-check"></i> 教室101</a></li>
+                    <li><a class="dropdown-item" href="#">教室102</a></li>
+                    <li><a class="dropdown-item" href="#">教室103</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">设置监控教室...</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="monitoring-container">
+        <div class="row flex-grow-1">
+            <!-- 左侧面板 - 实时转录 -->
+            <div class="col-lg-8">
+                <div class="card transcript-card">
+                    <div class="transcript-header">
+                        <h5 class="mb-0"><i class="bi bi-mic"></i> 语音实时转录</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary me-1" id="btn-clear-transcript">
+                                <i class="bi bi-trash"></i> 清空
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" id="btn-export-transcript">
+                                <i class="bi bi-download"></i> 导出
+                            </button>
+                        </div>
+                    </div>
+                    <div class="transcript-body" id="transcript-container">
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-mic-mute" style="font-size: 3rem;"></i>
+                            <p class="mt-3">等待语音输入...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧面板 - 风险评估 -->
+            <div class="col-lg-4">
+                <!-- 风险仪表盘 -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-speedometer"></i> 实时风险评估</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="risk-meter">
+                            <div class="gauge-container">
+                                <div class="gauge-background"></div>
+                                <div class="gauge-mask"></div>
+                                <div class="gauge-needle" id="risk-needle"></div>
+                                <div class="gauge-value" id="risk-value">0%</div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="badge bg-success">安全</span>
+                            <span class="badge bg-warning text-dark">注意</span>
+                            <span class="badge bg-orange">警告</span>
+                            <span class="badge bg-danger">危险</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 识别到的关键词 -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-tags"></i> 识别到的敏感词</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush keyword-list" id="keyword-list">
+                            <li class="list-group-item text-center py-4 text-muted">
+                                暂无敏感词被识别
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 风险因素 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> 风险因素</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush risk-factors-list" id="risk-factors-list">
+                            <li class="list-group-item text-center py-4 text-muted">
+                                未检测到风险因素
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 初始化WebSocket连接
+    function initSocketConnection() {
+        const socket = io();
+        
+        socket.on('connect', () => {
+            console.log('WebSocket连接已建立');
+        });
+        
+        socket.on('new_analysis', (data) => {
+            console.log('收到新分析结果:', data);
+            addTranscriptItem(data);
+            updateRiskMeter(data.risk_score);
+            updateKeywords(data.keyword_matches);
+            updateRiskFactors(data.risk_factors);
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('WebSocket连接已断开');
+        });
+    }
+    
+    // 添加转录项
+    function addTranscriptItem(data) {
+        const container = document.getElementById('transcript-container');
+        
+        // 如果是第一个条目，清空容器
+        if (container.querySelector('.text-center')) {
+            container.innerHTML = '';
+        }
+        
+        // 创建新条目
+        const item = document.createElement('div');
+        item.className = 'transcript-item';
+        
+        // 根据风险级别添加样式
+        if (data.risk_level === 'high' || data.risk_level === 'critical') {
+            item.style.borderLeftColor = '#dc3545';
+            item.style.backgroundColor = 'rgba(220, 53, 69, 0.05)';
+        } else if (data.risk_level === 'medium') {
+            item.style.borderLeftColor = '#ffc107';
+            item.style.backgroundColor = 'rgba(255, 193, 7, 0.05)';
+        }
+        
+        // 格式化时间
+        const time = new Date(data.timestamp).toLocaleTimeString('zh-CN');
+        
+        // 高亮敏感词
+        let highlightedText = data.text;
+        data.keyword_matches.forEach(keyword => {
+            const regex = new RegExp(`(${keyword.keyword})`, 'gi');
+            highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
+        });
+        
+        // 设置HTML内容
+        item.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="transcript-time">${time}</div>
+                <div class="risk-badge ${getRiskBadgeClass(data.risk_level)}">
+                    ${getRiskLevelText(data.risk_level)}
+                </div>
+            </div>
+            <div class="transcript-text mt-1">${highlightedText}</div>
+        `;
+        
+        // 添加到容器并滚动到底部
+        container.appendChild(item);
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    // 获取风险级别对应的徽章类
+    function getRiskBadgeClass(level) {
+        switch(level) {
+            case 'critical': return 'bg-danger';
+            case 'high': return 'bg-orange';
+            case 'medium': return 'bg-warning text-dark';
+            case 'low': 
+            default: return 'bg-success';
+        }
+    }
+    
+    // 获取风险级别对应的文本
+    function getRiskLevelText(level) {
+        switch(level) {
+            case 'critical': return '严重风险';
+            case 'high': return '高风险';
+            case 'medium': return '中风险';
+            case 'low': return '低风险';
+            default: return '未知风险';
+        }
+    }
+    
+    // 更新风险仪表盘
+    function updateRiskMeter(riskScore) {
+        // 计算指针旋转角度 (0度对应0分，180度对应1分)
+        const angle = 180 * riskScore;
+        document.getElementById('risk-needle').style.transform = `rotate(${angle}deg)`;
+        document.getElementById('risk-value').textContent = `${(riskScore * 100).toFixed(0)}%`;
+        
+        // 根据风险值改变数字颜色
+        const riskValue = document.getElementById('risk-value');
+        if (riskScore >= 0.8) {
+            riskValue.style.color = '#dc3545';  // 危险
+        } else if (riskScore >= 0.6) {
+            riskValue.style.color = '#fd7e14';  // 警告
+        } else if (riskScore >= 0.3) {
+            riskValue.style.color = '#ffc107';  // 注意
+        } else {
+            riskValue.style.color = '#28a745';  // 安全
+        }
+    }
+    
+    // 更新关键词列表
+    function updateKeywords(keywords) {
+        const container = document.getElementById('keyword-list');
+        
+        if (!keywords || keywords.length === 0) {
+            container.innerHTML = `
+                <li class="list-group-item text-center py-4 text-muted">
+                    暂无敏感词被识别
+                </li>
+            `;
+            return;
+        }
+        
+        // 清空容器
+        container.innerHTML = '';
+        
+        // 添加关键词
+        keywords.forEach(keyword => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            
+            // 计算风险级别样式
+            let badgeClass = 'bg-success';
+            if (keyword.weight >= 0.8) {
+                badgeClass = 'bg-danger';
+            } else if (keyword.weight >= 0.6) {
+                badgeClass = 'bg-orange';
+            } else if (keyword.weight >= 0.3) {
+                badgeClass = 'bg-warning text-dark';
+            }
+            
+            item.innerHTML = `
+                <div>${keyword.keyword}</div>
+                <div>
+                    <span class="badge ${badgeClass} me-1">${(keyword.weight * 100).toFixed(0)}%</span>
+                    <span class="badge bg-secondary">${keyword.count}次</span>
+                </div>
+            `;
+            
+            container.appendChild(item);
+        });
+    }
+    
+    // 更新风险因素列表
+    function updateRiskFactors(factors) {
+        const container = document.getElementById('risk-factors-list');
+        
+        if (!factors || factors.length === 0) {
+            container.innerHTML = `
+                <li class="list-group-item text-center py-4 text-muted">
+                    未检测到风险因素
+                </li>
+            `;
+            return;
+        }
+        
+        // 清空容器
+        container.innerHTML = '';
+        
+        // 添加风险因素
+        factors.forEach(factor => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item';
+            item.textContent = factor;
+            container.appendChild(item);
+        });
+    }
+    
+    // 清空转录
+    function clearTranscript() {
+        document.getElementById('transcript-container').innerHTML = `
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-mic-mute" style="font-size: 3rem;"></i>
+                <p class="mt-3">等待语音输入...</p>
+            </div>
+        `;
+    }
+    
+    // 导出转录
+    function exportTranscript() {
+        const container = document.getElementById('transcript-container');
+        const items = container.querySelectorAll('.transcript-item');
+        
+        if (items.length === 0) {
+            alert('没有可导出的转录内容');
+            return;
+        }
+        
+        let text = '课堂语义行为分析系统 - 转录记录\n';
+        text += '导出时间: ' + new Date().toLocaleString('zh-CN') + '\n\n';
+        
+        items.forEach(item => {
+            const time = item.querySelector('.transcript-time').textContent;
+            const riskLevel = item.querySelector('.risk-badge').textContent;
+            const transcriptText = item.querySelector('.transcript-text').textContent;
+            
+            text += `[${time}] [${riskLevel}]\n${transcriptText}\n\n`;
+        });
+        
+        // 创建下载链接
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transcript_' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化WebSocket连接
+        initSocketConnection();
+        
+        // 绑定按钮事件
+        document.getElementById('btn-clear-transcript').addEventListener('click', clearTranscript);
+        document.getElementById('btn-export-transcript').addEventListener('click', exportTranscript);
+        
+        // 模拟数据（演示用）
+        setTimeout(() => {
+            const mockData = {
+                text: "西方民主制度有其优点，但中国特色社会主义道路更适合我国国情。",
+                timestamp: new Date().toISOString(),
+                risk_level: "medium",
+                risk_score: 0.45,
+                keyword_matches: [
+                    { keyword: "西方民主", count: 1, weight: 0.7 }
+                ],
+                risk_factors: [
+                    "敏感关键词: 西方民主 (风险值: 0.70)"
+                ]
+            };
+            addTranscriptItem(mockData);
+            updateRiskMeter(mockData.risk_score);
+            updateKeywords(mockData.keyword_matches);
+            updateRiskFactors(mockData.risk_factors);
+        }, 1000);
+    });
+</script>
+{% endblock %}

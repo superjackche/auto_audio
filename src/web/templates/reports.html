@@ -1,0 +1,743 @@
+{% extends "base.html" %}
+
+{% block title %}课堂语义行为实时分析系统 - 风险报告{% endblock %}
+
+{% block head %}
+<style>
+    .reports-header {
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .report-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+    .report-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    .risk-low {
+        border-left: 4px solid #28a745;
+    }
+    .risk-medium {
+        border-left: 4px solid #ffc107;
+    }
+    .risk-high {
+        border-left: 4px solid #fd7e14;
+    }
+    .risk-critical {
+        border-left: 4px solid #dc3545;
+    }
+    .report-list {
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+    }
+    .report-detail-header {
+        background-color: rgba(30, 60, 114, 0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem;
+    }
+    .report-detail-body {
+        padding: 1rem;
+    }
+    .detail-section {
+        margin-bottom: 1.5rem;
+    }
+    .detail-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1e3c72;
+    }
+    .risk-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .gauge {
+        width: 100%;
+        height: 10px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+    .gauge-fill {
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 5px;
+    }
+    .report-filters {
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .gauge {
+        width: 100%;
+        height: 10px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+    .gauge-fill {
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 5px;
+    }
+    .report-filters {
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- 报告页面标题 -->
+    <div class="reports-header d-flex align-items-center">
+        <div>
+            <h3 class="mb-0"><i class="bi bi-file-earmark-text"></i> 风险分析报告</h3>
+        </div>
+        <div class="ms-auto">
+            <button class="btn btn-light" id="btn-refresh-reports">
+                <i class="bi bi-arrow-clockwise"></i> 刷新
+            </button>
+        </div>
+    </div>
+    
+    <!-- 过滤器 -->
+    <div class="card mb-3">
+        <div class="card-body report-filters">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label">风险级别</label>
+                    <select class="form-select" id="filter-risk-level">
+                        <option value="all" selected>全部级别</option>
+                        <option value="critical">严重风险</option>
+                        <option value="high">高风险</option>
+                        <option value="medium">中风险</option>
+                        <option value="low">低风险</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">日期范围</label>
+                    <select class="form-select" id="filter-date-range">
+                        <option value="all" selected>全部时间</option>
+                        <option value="today">今天</option>
+                        <option value="yesterday">昨天</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">关键词搜索</label>
+                    <input type="text" class="form-control" id="filter-keyword" placeholder="输入关键词...">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" id="btn-apply-filters">
+                        <i class="bi bi-search"></i> 应用过滤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- 左侧报告列表 -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">风险报告列表</h5>
+                    <span class="badge bg-secondary" id="report-count">0</span>
+                </div>
+                <div class="report-list" id="report-list">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3">加载报告中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧报告详情 -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="report-detail-header">
+                    <h5 class="mb-0" id="report-detail-title">选择报告查看详情</h5>
+                </div>
+                <div class="report-detail-body" id="report-detail">
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-file-earmark" style="font-size: 3rem;"></i>
+                        <p class="mt-3">请从左侧选择一个报告</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 报告模板 -->
+<template id="report-item-template">
+    <div class="card report-card mb-2 risk-{risk_level}" data-report-id="{id}">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <span class="badge bg-{risk_badge}">{risk_text}</span>
+                        <small class="text-muted">{time}</small>
+                    </div>
+                    <p class="mt-2 mb-1 text-truncate">{text}</p>
+                    <div class="gauge mt-1">
+                        <div class="gauge-fill" style="width: {risk_percent}%; background-color: {risk_color};"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 报告详情模板 -->
+<template id="report-detail-template">
+    <div class="alert alert-{alert_class} d-flex align-items-center mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 1.5rem;"></i>
+        <div>
+            检测到<strong>{risk_level_text}</strong>内容，风险评分：<strong>{risk_score}%</strong>
+        </div>
+    </div>
+    
+    <div class="detail-section">
+        <div class="detail-title"><i class="bi bi-chat-text"></i> 监测文本</div>
+        <div class="p-3 bg-light rounded">{text}</div>
+    </div>
+    
+    <div class="detail-section">
+        <div class="detail-title"><i class="bi bi-exclamation-circle"></i> 风险因素</div>
+        <ul class="list-group">
+            {risk_factors_html}
+        </ul>
+    </div>
+    
+    <div class="detail-section">
+        <div class="detail-title"><i class="bi bi-tags"></i> 敏感关键词</div>
+        {keywords_html}
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="detail-section">
+                <div class="detail-title"><i class="bi bi-pie-chart"></i> 分析细节</div>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td>关键词分析得分</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="gauge flex-grow-1 me-2">
+                                        <div class="gauge-fill" style="width: {keyword_score_percent}%; background-color: {keyword_score_color};"></div>
+                                    </div>
+                                    <span>{keyword_score}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>语义分析得分</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="gauge flex-grow-1 me-2">
+                                        <div class="gauge-fill" style="width: {semantic_score_percent}%; background-color: {semantic_score_color};"></div>
+                                    </div>
+                                    <span>{semantic_score}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>逻辑一致性得分</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="gauge flex-grow-1 me-2">
+                                        <div class="gauge-fill" style="width: {consistency_score_percent}%; background-color: {consistency_score_color};"></div>
+                                    </div>
+                                    <span>{consistency_score}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="detail-section">
+                <div class="detail-title"><i class="bi bi-info-circle"></i> 报告信息</div>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td>报告 ID</td>
+                            <td><code>{id}</code></td>
+                        </tr>
+                        <tr>
+                            <td>生成时间</td>
+                            <td>{timestamp}</td>
+                        </tr>
+                        <tr>
+                            <td>风险级别</td>
+                            <td><span class="badge bg-{risk_badge}">{risk_level_text}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4 text-end">
+        <button class="btn btn-secondary" id="btn-export-report">
+            <i class="bi bi-download"></i> 导出报告
+        </button>
+    </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 全局保存报告数据
+    let allReports = [];
+    let currentReport = null;
+    
+    // 加载报告列表
+    function loadReports() {
+        const reportList = document.getElementById('report-list');
+        reportList.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3">加载报告中...</p>
+            </div>
+        `;
+        
+        fetch('/api/reports/list')
+            .then(response => response.json())
+            .then(data => {
+                allReports = data;
+                renderReportList(data);
+            })
+            .catch(error => {
+                console.error('加载报告列表失败:', error);
+                reportList.innerHTML = `
+                    <div class="text-center py-5 text-danger">
+                        <i class="bi bi-exclamation-circle" style="font-size: 3rem;"></i>
+                        <p class="mt-3">加载报告失败，请重试</p>
+                    </div>
+                `;
+            });
+    }
+    
+    // 渲染报告列表
+    function renderReportList(reports) {
+        const reportList = document.getElementById('report-list');
+        const reportCount = document.getElementById('report-count');
+        const template = document.getElementById('report-item-template').innerHTML;
+        
+        if (!reports || reports.length === 0) {
+            reportList.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-3">暂无报告</p>
+                </div>
+            `;
+            reportCount.textContent = '0';
+            return;
+        }
+        
+        // 更新报告数量
+        reportCount.textContent = reports.length;
+        
+        // 清空列表
+        reportList.innerHTML = '';
+        
+        // 添加报告项
+        reports.forEach(report => {
+            let html = template;
+            
+            // 风险级别相关样式
+            let riskBadge, riskText, riskColor;
+            switch(report.risk_level) {
+                case 'critical':
+                    riskBadge = 'danger';
+                    riskText = '严重风险';
+                    riskColor = '#dc3545';
+                    break;
+                case 'high':
+                    riskBadge = 'orange';
+                    riskText = '高风险';
+                    riskColor = '#fd7e14';
+                    break;
+                case 'medium':
+                    riskBadge = 'warning text-dark';
+                    riskText = '中风险';
+                    riskColor = '#ffc107';
+                    break;
+                case 'low':
+                default:
+                    riskBadge = 'success';
+                    riskText = '低风险';
+                    riskColor = '#28a745';
+                    break;
+            }
+            
+            // 格式化时间
+            const time = new Date(report.timestamp).toLocaleString('zh-CN');
+            
+            // 风险百分比
+            const riskPercent = (report.risk_score * 100).toFixed(0);
+            
+            // 替换模板变量
+            html = html.replace(/{id}/g, report.id)
+                       .replace(/{risk_level}/g, report.risk_level)
+                       .replace(/{risk_badge}/g, riskBadge)
+                       .replace(/{risk_text}/g, riskText)
+                       .replace(/{risk_color}/g, riskColor)
+                       .replace(/{risk_percent}/g, riskPercent)
+                       .replace(/{time}/g, time)
+                       .replace(/{text}/g, report.text || '无文本内容');
+            
+            // 创建DOM元素
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const reportItem = div.firstElementChild;
+            
+            // 添加点击事件
+            reportItem.addEventListener('click', () => {
+                loadReportDetail(report.id);
+                
+                // 移除其他选中项的高亮
+                document.querySelectorAll('.report-card').forEach(item => {
+                    item.classList.remove('bg-light');
+                });
+                
+                // 高亮当前选中项
+                reportItem.classList.add('bg-light');
+            });
+            
+            reportList.appendChild(reportItem);
+        });
+    }
+    
+    // 加载报告详情
+    function loadReportDetail(reportId) {
+        const detailContainer = document.getElementById('report-detail');
+        const detailTitle = document.getElementById('report-detail-title');
+        
+        detailContainer.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3">加载报告详情...</p>
+            </div>
+        `;
+        
+        fetch(`/api/reports/detail/${reportId}`)
+            .then(response => response.json())
+            .then(data => {
+                currentReport = data;
+                renderReportDetail(data);
+            })
+            .catch(error => {
+                console.error('加载报告详情失败:', error);
+                detailContainer.innerHTML = `
+                    <div class="text-center py-5 text-danger">
+                        <i class="bi bi-exclamation-circle" style="font-size: 3rem;"></i>
+                        <p class="mt-3">加载报告详情失败，请重试</p>
+                    </div>
+                `;
+            });
+    }
+    
+    // 渲染报告详情
+    function renderReportDetail(report) {
+        const detailContainer = document.getElementById('report-detail');
+        const detailTitle = document.getElementById('report-detail-title');
+        const template = document.getElementById('report-detail-template').innerHTML;
+        
+        // 更新标题
+        detailTitle.innerHTML = `
+            <i class="bi bi-file-earmark-text"></i> 
+            ${new Date(report.timestamp).toLocaleString('zh-CN')} 的风险报告
+        `;
+        
+        // 风险级别相关样式
+        let alertClass, riskLevelText, riskBadge;
+        switch(report.risk_level) {
+            case 'critical':
+                alertClass = 'danger';
+                riskLevelText = '严重风险';
+                riskBadge = 'danger';
+                break;
+            case 'high':
+                alertClass = 'warning';
+                riskLevelText = '高风险';
+                riskBadge = 'orange';
+                break;
+            case 'medium':
+                alertClass = 'warning';
+                riskLevelText = '中风险';
+                riskBadge = 'warning text-dark';
+                break;
+            case 'low':
+            default:
+                alertClass = 'success';
+                riskLevelText = '低风险';
+                riskBadge = 'success';
+                break;
+        }
+        
+        // 风险因素HTML
+        let riskFactorsHtml = '';
+        if (report.risk_factors && report.risk_factors.length > 0) {
+            riskFactorsHtml = report.risk_factors.map(factor => 
+                `<li class="list-group-item">${factor}</li>`
+            ).join('');
+        } else {
+            riskFactorsHtml = '<li class="list-group-item text-muted">未检测到风险因素</li>';
+        }
+        
+        // 关键词HTML
+        let keywordsHtml = '';
+        if (report.keyword_matches && report.keyword_matches.length > 0) {
+            keywordsHtml = '<div class="d-flex flex-wrap gap-2">';
+            report.keyword_matches.forEach(keyword => {
+                let badgeClass = 'bg-success';
+                if (keyword.weight >= 0.8) {
+                    badgeClass = 'bg-danger';
+                } else if (keyword.weight >= 0.6) {
+                    badgeClass = 'bg-orange';
+                } else if (keyword.weight >= 0.3) {
+                    badgeClass = 'bg-warning text-dark';
+                }
+                
+                keywordsHtml += `
+                    <div class="badge ${badgeClass} p-2">
+                        ${keyword.keyword} 
+                        <span class="ms-1 badge bg-light text-dark">
+                            ${(keyword.weight * 100).toFixed(0)}%
+                        </span>
+                    </div>
+                `;
+            });
+            keywordsHtml += '</div>';
+        } else {
+            keywordsHtml = '<p class="text-muted">未检测到敏感关键词</p>';
+        }
+        
+        // 分析细节
+        const details = report.details || {};
+        const keywordScore = details.keyword_score || 0;
+        const semanticScore = details.semantic_score || 0;
+        const consistencyScore = details.consistency_score || 0;
+        
+        // 获取评分颜色
+        function getScoreColor(score) {
+            if (score >= 0.8) return '#dc3545';
+            if (score >= 0.6) return '#fd7e14';
+            if (score >= 0.3) return '#ffc107';
+            return '#28a745';
+        }
+        
+        // 替换模板变量
+        let html = template;
+        html = html.replace(/{id}/g, report.id)
+                   .replace(/{alert_class}/g, alertClass)
+                   .replace(/{risk_level_text}/g, riskLevelText)
+                   .replace(/{risk_score}/g, (report.risk_score * 100).toFixed(0))
+                   .replace(/{risk_badge}/g, riskBadge)
+                   .replace(/{text}/g, report.text || '无文本内容')
+                   .replace(/{risk_factors_html}/g, riskFactorsHtml)
+                   .replace(/{keywords_html}/g, keywordsHtml)
+                   .replace(/{timestamp}/g, new Date(report.timestamp).toLocaleString('zh-CN'))
+                   .replace(/{keyword_score}/g, keywordScore.toFixed(2))
+                   .replace(/{keyword_score_percent}/g, (keywordScore * 100).toFixed(0))
+                   .replace(/{keyword_score_color}/g, getScoreColor(keywordScore))
+                   .replace(/{semantic_score}/g, semanticScore.toFixed(2))
+                   .replace(/{semantic_score_percent}/g, (semanticScore * 100).toFixed(0))
+                   .replace(/{semantic_score_color}/g, getScoreColor(semanticScore))
+                   .replace(/{consistency_score}/g, consistencyScore.toFixed(2))
+                   .replace(/{consistency_score_percent}/g, (consistencyScore * 100).toFixed(0))
+                   .replace(/{consistency_score_color}/g, getScoreColor(consistencyScore));
+        
+        // 更新详情容器
+        detailContainer.innerHTML = html;
+        
+        // 绑定导出报告按钮
+        document.getElementById('btn-export-report').addEventListener('click', exportReport);
+    }
+    
+    // 导出报告
+    function exportReport() {
+        if (!currentReport) {
+            alert('请先选择一个报告');
+            return;
+        }
+        
+        // 生成导出文本
+        let text = '课堂语义行为分析系统 - 风险报告\n';
+        text += '==========================================================\n\n';
+        
+        // 报告基本信息
+        text += `报告ID: ${currentReport.id}\n`;
+        text += `生成时间: ${new Date(currentReport.timestamp).toLocaleString('zh-CN')}\n`;
+        text += `风险级别: ${currentReport.risk_level} (${(currentReport.risk_score * 100).toFixed(0)}%)\n\n`;
+        
+        // 监测文本
+        text += '监测文本:\n';
+        text += '-----------------------------------------------------------\n';
+        text += `${currentReport.text}\n\n`;
+        
+        // 风险因素
+        text += '风险因素:\n';
+        text += '-----------------------------------------------------------\n';
+        if (currentReport.risk_factors && currentReport.risk_factors.length > 0) {
+            currentReport.risk_factors.forEach(factor => {
+                text += `- ${factor}\n`;
+            });
+        } else {
+            text += '未检测到风险因素\n';
+        }
+        text += '\n';
+        
+        // 敏感关键词
+        text += '敏感关键词:\n';
+        text += '-----------------------------------------------------------\n';
+        if (currentReport.keyword_matches && currentReport.keyword_matches.length > 0) {
+            currentReport.keyword_matches.forEach(keyword => {
+                text += `- ${keyword.keyword} (权重: ${keyword.weight.toFixed(2)}, 出现次数: ${keyword.count})\n`;
+            });
+        } else {
+            text += '未检测到敏感关键词\n';
+        }
+        text += '\n';
+        
+        // 分析细节
+        const details = currentReport.details || {};
+        text += '分析细节:\n';
+        text += '-----------------------------------------------------------\n';
+        text += `关键词分析得分: ${(details.keyword_score || 0).toFixed(2)}\n`;
+        text += `语义分析得分: ${(details.semantic_score || 0).toFixed(2)}\n`;
+        text += `逻辑一致性得分: ${(details.consistency_score || 0).toFixed(2)}\n\n`;
+        
+        text += '==========================================================\n';
+        text += `导出时间: ${new Date().toLocaleString('zh-CN')}\n`;
+        
+        // 创建下载链接
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `risk_report_${currentReport.id}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // 应用过滤器
+    function applyFilters() {
+        const riskLevel = document.getElementById('filter-risk-level').value;
+        const dateRange = document.getElementById('filter-date-range').value;
+        const keyword = document.getElementById('filter-keyword').value.trim().toLowerCase();
+        
+        // 过滤报告
+        let filteredReports = [...allReports];
+        
+        // 风险级别过滤
+        if (riskLevel !== 'all') {
+            filteredReports = filteredReports.filter(report => report.risk_level === riskLevel);
+        }
+        
+        // 日期范围过滤
+        if (dateRange !== 'all') {
+            const now = new Date();
+            let startDate;
+            
+            switch(dateRange) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'yesterday':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+                    const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    filteredReports = filteredReports.filter(report => {
+                        const reportDate = new Date(report.timestamp);
+                        return reportDate >= startDate && reportDate < endDate;
+                    });
+                    break;
+                case 'week':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+            }
+            
+            if (dateRange !== 'yesterday') {
+                filteredReports = filteredReports.filter(report => {
+                    return new Date(report.timestamp) >= startDate;
+                });
+            }
+        }
+        
+        // 关键词过滤
+        if (keyword) {
+            filteredReports = filteredReports.filter(report => {
+                // 在文本中搜索
+                if (report.text && report.text.toLowerCase().includes(keyword)) {
+                    return true;
+                }
+                
+                // 在风险因素中搜索
+                if (report.risk_factors && report.risk_factors.some(factor => 
+                    factor.toLowerCase().includes(keyword)
+                )) {
+                    return true;
+                }
+                
+                // 在关键词中搜索
+                if (report.keyword_matches && report.keyword_matches.some(match => 
+                    match.keyword.toLowerCase().includes(keyword)
+                )) {
+                    return true;
+                }
+                
+                return false;
+            });
+        }
+        
+        // 渲染过滤后的报告
+        renderReportList(filteredReports);
+    }
+    
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 加载报告列表
+        loadReports();
+        
+        // 绑定刷新按钮事件
+        document.getElementById('btn-refresh-reports').addEventListener('click', loadReports);
+        
+        // 绑定过滤按钮事件
+        document.getElementById('btn-apply-filters').addEventListener('click', applyFilters);
+    });
+</script>
+{% endblock %}

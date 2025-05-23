@@ -1,0 +1,703 @@
+{% extends "base.html" %}
+
+{% block title %}课堂语义行为实时分析系统 - 系统设置{% endblock %}
+
+{% block head %}
+<style>
+    .settings-header {
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    .setting-section {
+        margin-bottom: 2rem;
+    }
+    .section-title {
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #1e3c72;
+    }
+    .form-check-input:checked {
+        background-color: #1e3c72;
+        border-color: #1e3c72;
+    }
+    .nav-pills .nav-link.active {
+        background-color: #1e3c72;
+    }
+    .nav-pills .nav-link {
+        color: #1e3c72;
+    }
+    .btn-primary {
+        background-color: #1e3c72;
+        border-color: #1e3c72;
+    }
+    .btn-primary:hover {
+        background-color: #2a5298;
+        border-color: #2a5298;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- 设置页面标题 -->
+    <div class="settings-header d-flex align-items-center">
+        <div>
+            <h3 class="mb-0"><i class="bi bi-gear"></i> 系统设置</h3>
+        </div>
+        <div class="ms-auto">
+            <button class="btn btn-primary" id="btn-save-settings">
+                <i class="bi bi-save"></i> 保存设置
+            </button>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- 设置导航 -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="nav flex-column nav-pills" id="settings-tab" role="tablist">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#general-settings" type="button">
+                            <i class="bi bi-gear-wide"></i> 常规设置
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#audio-settings" type="button">
+                            <i class="bi bi-mic"></i> 音频设置
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#nlp-settings" type="button">
+                            <i class="bi bi-translate"></i> 语义分析设置
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#risk-settings" type="button">
+                            <i class="bi bi-shield-exclamation"></i> 风险评估设置
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#alert-settings" type="button">
+                            <i class="bi bi-bell"></i> 预警设置
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#user-settings" type="button">
+                            <i class="bi bi-people"></i> 用户管理
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#system-info" type="button">
+                            <i class="bi bi-info-circle"></i> 系统信息
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设置内容 -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- 常规设置 -->
+                <div class="tab-pane fade show active" id="general-settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">系统基本设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="system-name" class="form-label">系统名称</label>
+                                <input type="text" class="form-control" id="system-name" value="课堂语义行为实时分析系统">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="log-level" class="form-label">日志级别</label>
+                                <select class="form-select" id="log-level">
+                                    <option value="DEBUG">调试 (DEBUG)</option>
+                                    <option value="INFO" selected>信息 (INFO)</option>
+                                    <option value="WARNING">警告 (WARNING)</option>
+                                    <option value="ERROR">错误 (ERROR)</option>
+                                    <option value="CRITICAL">严重 (CRITICAL)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="data-retention" class="form-label">数据保留时间</label>
+                                <select class="form-select" id="data-retention">
+                                    <option value="7">7天</option>
+                                    <option value="14">14天</option>
+                                    <option value="30" selected>30天</option>
+                                    <option value="90">90天</option>
+                                    <option value="180">180天</option>
+                                    <option value="365">365天</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="debug-mode">
+                                <label class="form-check-label" for="debug-mode">启用调试模式</label>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="auto-start" checked>
+                                <label class="form-check-label" for="auto-start">系统启动时自动开始监控</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">Web界面设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="web-host" class="form-label">监听地址</label>
+                                <input type="text" class="form-control" id="web-host" value="127.0.0.1">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="web-port" class="form-label">监听端口</label>
+                                <input type="number" class="form-control" id="web-port" value="5000">
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="web-enabled" checked>
+                                <label class="form-check-label" for="web-enabled">启用Web界面</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 音频设置 -->
+                <div class="tab-pane fade" id="audio-settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">音频捕获设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="audio-device" class="form-label">音频设备</label>
+                                <select class="form-select" id="audio-device">
+                                    <option value="">默认设备</option>
+                                    <option value="1">麦克风 (USB Audio Device)</option>
+                                    <option value="2">麦克风 (Realtek High Definition Audio)</option>
+                                </select>
+                                <small class="form-text text-muted">选择捕获音频的输入设备</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="sample-rate" class="form-label">采样率</label>
+                                <select class="form-select" id="sample-rate">
+                                    <option value="8000">8 kHz</option>
+                                    <option value="16000" selected>16 kHz</option>
+                                    <option value="22050">22.05 kHz</option>
+                                    <option value="44100">44.1 kHz</option>
+                                    <option value="48000">48 kHz</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="channels" class="form-label">声道数</label>
+                                <select class="form-select" id="channels">
+                                    <option value="1" selected>单声道</option>
+                                    <option value="2">立体声</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="chunk-size" class="form-label">缓冲区大小</label>
+                                <input type="number" class="form-control" id="chunk-size" value="1024">
+                                <small class="form-text text-muted">每次捕获的样本数</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="record-seconds" class="form-label">记录时长</label>
+                                <input type="number" class="form-control" id="record-seconds" value="5">
+                                <small class="form-text text-muted">每次记录的音频长度（秒）</small>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="vad-enabled" checked>
+                                <label class="form-check-label" for="vad-enabled">启用语音活动检测 (VAD)</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="vad-threshold" class="form-label">VAD灵敏度</label>
+                                <input type="range" class="form-range" min="0.1" max="0.9" step="0.05" id="vad-threshold" value="0.5">
+                                <div class="d-flex justify-content-between">
+                                    <small>低 (检测更多声音)</small>
+                                    <small>高 (仅检测清晰语音)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">语音识别设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="stt-engine" class="form-label">语音识别引擎</label>
+                                <select class="form-select" id="stt-engine">
+                                    <option value="whisper" selected>Whisper</option>
+                                    <option value="pocketsphinx">PocketSphinx</option>
+                                    <option value="google">Google Speech-to-Text</option>
+                                    <option value="azure">Azure Speech Services</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="whisper-model" class="form-label">Whisper模型</label>
+                                <select class="form-select" id="whisper-model">
+                                    <option value="tiny">Tiny (极小型)</option>
+                                    <option value="base">Base (基础型)</option>
+                                    <option value="small">Small (小型)</option>
+                                    <option value="medium" selected>Medium (中型)</option>
+                                    <option value="large">Large (大型)</option>
+                                </select>
+                                <small class="form-text text-muted">模型越大，准确度越高，但需要更多计算资源</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="language" class="form-label">语言设置</label>
+                                <select class="form-select" id="language">
+                                    <option value="zh" selected>中文</option>
+                                    <option value="en">英文</option>
+                                    <option value="auto">自动检测</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="use-gpu" checked>
+                                <label class="form-check-label" for="use-gpu">使用GPU加速 (如可用)</label>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="offline-mode" checked>
+                                <label class="form-check-label" for="offline-mode">离线模式</label>
+                                <small class="form-text text-muted d-block">启用离线模式将使用本地模型，不需要网络连接</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="api-key" class="form-label">API密钥 (在线模式)</label>
+                                <input type="password" class="form-control" id="api-key" placeholder="输入API密钥">
+                                <small class="form-text text-muted">仅在使用在线服务 (如Google, Azure) 时需要</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 语义分析设置 -->
+                <div class="tab-pane fade" id="nlp-settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">基础NLP设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="embedding-model" class="form-label">嵌入模型</label>
+                                <select class="form-select" id="embedding-model">
+                                    <option value="bert-base-chinese" selected>BERT Base Chinese</option>
+                                    <option value="hfl/chinese-roberta-wwm-ext">Chinese RoBERTa</option>
+                                    <option value="hfl/chinese-macbert-base">Chinese MacBERT</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="tokenizer" class="form-label">分词器</label>
+                                <select class="form-select" id="tokenizer">
+                                    <option value="jieba" selected>结巴分词 (jieba)</option>
+                                    <option value="bert">BERT分词器</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">关键词检测设置</h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="keyword-detection-enabled" checked>
+                                <label class="form-check-label" for="keyword-detection-enabled">启用关键词检测</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="keyword-file" class="form-label">关键词文件</label>
+                                <input type="text" class="form-control" id="keyword-file" value="config/keywords.txt">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="keyword-weight" class="form-label">关键词权重</label>
+                                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" id="keyword-weight" value="0.4">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.1 (低影响)</small>
+                                    <small>0.9 (高影响)</small>
+                                </div>
+                                <small class="form-text text-muted">关键词检测在总风险评分中的权重</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="keyword-management" class="form-label">关键词管理</label>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary" id="btn-edit-keywords">
+                                        <i class="bi bi-pencil"></i> 编辑关键词
+                                    </button>
+                                    <button class="btn btn-outline-success" id="btn-import-keywords">
+                                        <i class="bi bi-upload"></i> 导入
+                                    </button>
+                                    <button class="btn btn-outline-secondary" id="btn-export-keywords">
+                                        <i class="bi bi-download"></i> 导出
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">语义分析设置</h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="semantic-analysis-enabled" checked>
+                                <label class="form-check-label" for="semantic-analysis-enabled">启用语义分析</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="semantic-model" class="form-label">语义分析模型</label>
+                                <select class="form-select" id="semantic-model">
+                                    <option value="local" selected>本地模型</option>
+                                    <option value="api">API服务</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="semantic-local-path" class="form-label">本地模型路径</label>
+                                <input type="text" class="form-control" id="semantic-local-path" value="data/models/bert_classifier">
+                                <small class="form-text text-muted">使用本地模型时的模型路径</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="semantic-api-url" class="form-label">API URL</label>
+                                <input type="text" class="form-control" id="semantic-api-url" placeholder="https://api.example.com/analysis">
+                                <small class="form-text text-muted">使用API服务时的接口地址</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="semantic-weight" class="form-label">语义分析权重</label>
+                                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" id="semantic-weight" value="0.3">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.1 (低影响)</small>
+                                    <small>0.9 (高影响)</small>
+                                </div>
+                                <small class="form-text text-muted">语义分析在总风险评分中的权重</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">逻辑一致性分析设置</h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="logic-analysis-enabled" checked>
+                                <label class="form-check-label" for="logic-analysis-enabled">启用逻辑一致性分析</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="history-window" class="form-label">历史窗口大小</label>
+                                <input type="number" class="form-control" id="history-window" value="10">
+                                <small class="form-text text-muted">保留多少条历史记录进行分析</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="logic-weight" class="form-label">逻辑分析权重</label>
+                                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" id="logic-weight" value="0.3">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.1 (低影响)</small>
+                                    <small>0.9 (高影响)</small>
+                                </div>
+                                <small class="form-text text-muted">逻辑分析在总风险评分中的权重</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 风险评估设置 -->
+                <div class="tab-pane fade" id="risk-settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">风险阈值设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="low-threshold" class="form-label">低风险阈值</label>
+                                <input type="range" class="form-range" min="0.1" max="0.4" step="0.05" id="low-threshold" value="0.3">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.1</small>
+                                    <small>0.4</small>
+                                </div>
+                                <small class="form-text text-muted">低于此值视为无风险，高于此值视为低风险</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="medium-threshold" class="form-label">中风险阈值</label>
+                                <input type="range" class="form-range" min="0.4" max="0.7" step="0.05" id="medium-threshold" value="0.6">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.4</small>
+                                    <small>0.7</small>
+                                </div>
+                                <small class="form-text text-muted">低于此值视为低风险，高于此值视为中风险</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="high-threshold" class="form-label">高风险阈值</label>
+                                <input type="range" class="form-range" min="0.7" max="0.9" step="0.05" id="high-threshold" value="0.8">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.7</small>
+                                    <small>0.9</small>
+                                </div>
+                                <small class="form-text text-muted">低于此值视为中风险，高于此值视为高风险</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="alert-threshold" class="form-label">预警阈值</label>
+                                <input type="range" class="form-range" min="0.5" max="0.9" step="0.05" id="alert-threshold" value="0.7">
+                                <div class="d-flex justify-content-between">
+                                    <small>0.5</small>
+                                    <small>0.9</small>
+                                </div>
+                                <small class="form-text text-muted">超过此值将触发预警通知</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 预警设置 -->
+                <div class="tab-pane fade" id="alert-settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">预警方式设置</h5>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="alert-console" checked>
+                                <label class="form-check-label" for="alert-console">控制台预警</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="alert-web" checked>
+                                <label class="form-check-label" for="alert-web">Web界面预警</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="alert-email">
+                                <label class="form-check-label" for="alert-email">邮件预警</label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="alert-sms">
+                                <label class="form-check-label" for="alert-sms">短信预警</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">邮件预警设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="smtp-server" class="form-label">SMTP服务器</label>
+                                <input type="text" class="form-control" id="smtp-server" placeholder="smtp.example.com">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="smtp-port" class="form-label">SMTP端口</label>
+                                <input type="number" class="form-control" id="smtp-port" value="587">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="smtp-username" class="form-label">用户名</label>
+                                <input type="text" class="form-control" id="smtp-username" placeholder="user@example.com">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="smtp-password" class="form-label">密码</label>
+                                <input type="password" class="form-control" id="smtp-password">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email-recipients" class="form-label">收件人</label>
+                                <textarea class="form-control" id="email-recipients" rows="2" placeholder="收件人邮箱，多个邮箱用逗号分隔"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">短信预警设置</h5>
+                            
+                            <div class="mb-3">
+                                <label for="sms-api-key" class="form-label">API密钥</label>
+                                <input type="password" class="form-control" id="sms-api-key">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="sms-recipients" class="form-label">收件人</label>
+                                <textarea class="form-control" id="sms-recipients" rows="2" placeholder="收件人手机号，多个号码用逗号分隔"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 用户管理 -->
+                <div class="tab-pane fade" id="user-settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">用户管理</h5>
+                            
+                            <div class="mb-3">
+                                <button class="btn btn-primary" id="btn-add-user">
+                                    <i class="bi bi-person-plus"></i> 添加用户
+                                </button>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>用户名</th>
+                                            <th>角色</th>
+                                            <th>上次登录</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>admin</td>
+                                            <td><span class="badge bg-primary">管理员</span></td>
+                                            <td>2023-05-23 12:34:56</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>user1</td>
+                                            <td><span class="badge bg-secondary">用户</span></td>
+                                            <td>2023-05-22 10:22:33</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 系统信息 -->
+                <div class="tab-pane fade" id="system-info">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="section-title">系统信息</h5>
+                            
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 30%">系统版本</th>
+                                        <td>1.0.0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Python版本</th>
+                                        <td>3.10.5</td>
+                                    </tr>
+                                    <tr>
+                                        <th>操作系统</th>
+                                        <td>Windows 10</td>
+                                    </tr>
+                                    <tr>
+                                        <th>CPU使用率</th>
+                                        <td>32%</td>
+                                    </tr>
+                                    <tr>
+                                        <th>内存使用率</th>
+                                        <td>1.2 GB / 8 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <th>GPU支持</th>
+                                        <td><span class="badge bg-success">可用</span> NVIDIA GeForce RTX 3060</td>
+                                    </tr>
+                                    <tr>
+                                        <th>运行时间</th>
+                                        <td>2天 5小时 37分钟</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="mt-3">
+                                <button class="btn btn-primary" id="btn-check-updates">
+                                    <i class="bi bi-arrow-clockwise"></i> 检查更新
+                                </button>
+                                <button class="btn btn-secondary" id="btn-system-logs">
+                                    <i class="bi bi-journal-text"></i> 查看日志
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 保存设置
+    document.getElementById('btn-save-settings').addEventListener('click', function() {
+        // 显示保存中提示
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 保存中...';
+        
+        // 收集设置数据
+        // 这里应该实现收集所有设置字段的逻辑
+        
+        // 模拟API调用
+        setTimeout(function() {
+            // 模拟保存成功
+            btn.innerHTML = '<i class="bi bi-check-circle"></i> 已保存';
+            
+            // 恢复按钮状态
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }, 2000);
+            
+        }, 1500);
+    });
+    
+    // 加载设置数据
+    function loadSettings() {
+        // 这里应该实现从服务器加载设置的逻辑
+        console.log('加载设置数据');
+    }
+    
+    // 编辑关键词
+    document.getElementById('btn-edit-keywords').addEventListener('click', function() {
+        // 这里应该实现打开关键词编辑器的逻辑
+        alert('关键词编辑功能尚未实现');
+    });
+    
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 加载设置数据
+        loadSettings();
+    });
+</script>
+{% endblock %}

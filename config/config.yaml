@@ -1,0 +1,121 @@
+# 课堂语义行为实时分析系统配置文件
+
+# 系统通用配置
+system:
+  name: "课堂语义行为实时分析系统"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  
+# 音频捕获配置
+audio:
+  sample_rate: 16000
+  channels: 1
+  chunk_size: 1024
+  record_seconds: 5
+  device_index: null  # null表示使用默认设备
+  vad_enabled: true  # 语音活动检测
+  vad_threshold: 0.5
+  
+# 语音识别配置
+speech_to_text:
+  engine: "whisper"  # whisper, pocketsphinx, google, azure
+  model: "medium"  # tiny, base, small, medium, large
+  language: "auto"  # 改为auto以自动检测语言
+  use_gpu: true
+  offline_mode: true
+  api_key: null  # 仅在使用在线API时需要
+  
+  # 在线API设置（可选）
+  azure:
+    key: null
+    region: "eastasia"
+  google:
+    credentials_file: null
+  openai:
+    key: null
+    
+# 自然语言处理配置
+nlp:
+  # 词向量模型
+  embedding_model: "bert-base-multilingual-cased"  # 改为多语言模型支持中英文
+  tokenizer: "jieba"
+  
+  # 关键词监测
+  keyword_detection:
+    enabled: true
+    keyword_file: "config/keywords.txt"
+    english_keyword_file: "config/english_keywords.txt"
+    weight: 0.4
+  
+  # 语义分析
+  semantic_analysis:
+    enabled: true
+    model: "local"  # local, api
+    local_model_path: "data/models/bert_classifier"
+    api_url: null
+    api_key: null
+    weight: 0.3
+    
+  # 逻辑一致性分析
+  logic_analysis:
+    enabled: true
+    history_window: 10  # 保留多少条历史记录进行分析
+    weight: 0.3
+    
+# 风险评估配置
+risk_assessment:
+  # 风险级别阈值 (0-1范围)
+  low_threshold: 0.3
+  medium_threshold: 0.6
+  high_threshold: 0.8
+  
+  # 预警设置
+  alert_threshold: 0.7  # 超过此值将触发预警
+  alert_method: ["console", "web"]  # console, web, email, sms
+  
+  # 预警通知配置
+  email:
+    enabled: false
+    smtp_server: "smtp.example.com"
+    smtp_port: 587
+    username: "alert@example.com"
+    password: null
+    recipients: ["admin@example.com"]
+    
+  sms:
+    enabled: false
+    api_key: null
+    recipients: ["+86123456789"]
+    
+# Web界面配置
+web:
+  enabled: true
+  host: "127.0.0.1"
+  port: 5000
+  debug: false
+  secret_key: "change_this_to_something_secret"
+  users:
+    admin:
+      username: "admin"
+      password_hash: "pbkdf2:sha256:150000$CHANGE_THIS$HASH_VALUE"  # 请更改为实际哈希值
+  
+# 数据存储配置
+storage:
+  database:
+    type: "sqlite"  # sqlite, mysql, postgresql
+    path: "data/classroom_monitor.db"
+    
+  # MySQL设置（如果使用）
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "classroom_monitor"
+    username: "root"
+    password: null
+    
+  # 报告设置
+  reports:
+    save_path: "data/reports"
+    auto_generate: true
+    generation_interval: 86400  # 以秒为单位，默认为每天

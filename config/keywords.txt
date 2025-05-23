@@ -1,0 +1,173 @@
+# 意识形态安全敏感关键词列表
+# 格式: 关键词,权重(0-1)
+
+# 中文政治类敏感词
+西方民主,0.8
+普世价值,0.7
+言论自由,0.6
+自由选举,0.7
+三权分立,0.7
+宪政民主,0.8
+公民社会,0.6
+人权保障,0.6
+
+# English Political Sensitive Words
+western democracy,0.8
+universal values,0.7
+freedom of speech,0.6
+free elections,0.7
+separation of powers,0.7
+constitutional democracy,0.8
+civil society,0.6
+human rights protection,0.6
+liberal democracy,0.8
+democratic transition,0.7
+political reform,0.7
+democratic values,0.7
+
+# 历史敏感事件
+文化大革命,0.7
+六四事件,0.9
+天安门事件,0.9
+
+# English Historical Sensitive Events
+cultural revolution,0.7
+tiananmen square incident,0.9
+tiananmen protest,0.9
+june fourth,0.9
+1989 protests,0.9
+tiananmen massacre,0.9
+tank man,0.9
+
+# 宗教类
+宗教信仰自由,0.7
+宗教优越性,0.8
+传教活动,0.7
+极端宗教思想,0.9
+
+# English Religious Sensitive Terms
+religious freedom,0.7
+religious superiority,0.8
+missionary activities,0.7
+religious extremism,0.9
+falun gong,0.9
+religious persecution,0.8
+religious censorship,0.8
+religious repression,0.8
+
+# 军事安全
+军事机密,0.9
+国防战略,0.8
+武器系统,0.8
+
+# English Military Security Terms
+military secrets,0.9
+defense strategy,0.8
+weapons systems,0.8
+military intelligence,0.9
+classified information,0.9
+strategic deployment,0.8
+military capabilities,0.8
+nuclear weapons,0.9
+
+# 意识形态批判
+马克思主义批判,0.8
+社会主义制度批判,0.9
+中国特色社会主义批判,0.9
+党的领导批判,0.9
+
+# English Ideological Criticism Terms
+criticism of marxism,0.8
+criticism of socialism,0.9
+criticism of chinese socialism,0.9
+criticism of party leadership,0.9
+communist party criticism,0.9
+authoritarian regime,0.8
+one-party rule,0.8
+political censorship,0.8
+propaganda system,0.8
+
+# 境外势力
+外国代理人,0.9
+境外NGO,0.8
+境外资金,0.8
+外国影响,0.7
+
+# English Foreign Influence Terms
+foreign agent,0.9
+foreign NGO,0.8
+foreign funding,0.8
+foreign influence,0.7
+color revolution,0.9
+regime change,0.9
+foreign interference,0.8
+CIA,0.8
+US intelligence,0.8
+western influence,0.8
+
+# 分裂国家
+台独,0.9
+港独,0.9
+藏独,0.9
+疆独,0.9
+民族分裂,0.9
+
+# English Separatism Terms
+taiwan independence,0.9
+hong kong independence,0.9
+tibet independence,0.9
+xinjiang independence,0.9
+separatism,0.9
+free tibet,0.9
+east turkestan,0.9
+taiwanese democracy,0.8
+hong kong democracy,0.8
+uyghur independence,0.9
+one country two systems,0.7
+
+# 煽动类
+颠覆政府,0.9
+反政府,0.9
+政权更迭,0.9
+社会动荡,0.8
+政治转型,0.7
+
+# English Incitement Terms
+overthrow government,0.9
+anti-government,0.9
+regime change,0.9
+social unrest,0.8
+political transition,0.7
+revolution,0.8
+uprising,0.8
+protests,0.7
+demonstrations,0.7
+political dissent,0.8
+civil disobedience,0.8
+
+# 教育体系批判
+教育体制批判,0.7
+教材批判,0.7
+思想政治教育批判,0.8
+
+# English Education System Criticism
+criticism of education system,0.7
+criticism of textbooks,0.7
+criticism of political education,0.8
+indoctrination,0.8
+political propaganda in education,0.8
+brainwashing,0.8
+ideological control,0.8
+academic freedom,0.7
+
+# Internet and Media Control
+censorship,0.8
+great firewall,0.8
+internet control,0.8
+media censorship,0.8
+banned websites,0.8
+VPN,0.7
+facebook,0.7
+twitter,0.7
+google,0.7
+youtube,0.7

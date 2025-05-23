@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+
+{% block title %}课堂语义行为实时分析系统 - 仪表盘{% endblock %}
+
+{% block head %}
+<style>
+    .card {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .card-header {
+        background-color: rgba(30, 60, 114, 0.05);
+        border-bottom: none;
+        font-weight: 600;
+    }
+    .stat-card {
+        border-left: 4px solid transparent;
+    }
+    .stat-card.low {
+        border-color: #28a745;
+    }
+    .stat-card.medium {
+        border-color: #ffc107;
+    }
+    .stat-card.high {
+        border-color: #fd7e14;
+    }
+    .stat-card.critical {
+        border-color: #dc3545;
+    }
+    .risk-indicator {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .risk-low {
+        background-color: #28a745;
+    }
+    .risk-medium {
+        background-color: #ffc107;
+    }
+    .risk-high {
+        background-color: #fd7e14;
+    }
+    .risk-critical {
+        background-color: #dc3545;
+    }
+    .icon-bg {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+    .icon-bg i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    .bg-primary-soft {
+        background-color: rgba(13, 110, 253, 0.15);
+    }
+    .bg-success-soft {
+        background-color: rgba(40, 167, 69, 0.15);
+    }
+    .bg-warning-soft {
+        background-color: rgba(255, 193, 7, 0.15);
+    }
+    .bg-danger-soft {
+        background-color: rgba(220, 53, 69, 0.15);
+    }
+    .dashboard-header {
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(30, 60, 114, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- 仪表盘头部 -->
+    <div class="dashboard-header d-flex align-items-center">
+        <div>
+            <h1 class="mb-2"><i class="bi bi-speedometer2"></i> 系统仪表盘</h1>
+            <p class="mb-0">欢迎使用课堂语义行为实时分析系统，全面掌握课堂安全状况。</p>
+        </div>
+        <div class="ms-auto text-end">
+            <div id="clock" class="fs-4 mb-1">--:--:--</div>
+            <div id="date">---- 年 -- 月 -- 日</div>
+        </div>
+    </div>
+    
+    <!-- 风险统计卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card low h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-bg bg-success-soft">
+                        <i class="bi bi-check-circle text-success"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-muted">低风险评估</h6>
+                        <h2 class="card-title mb-0 text-success" id="low-risk-count">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card medium h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-bg bg-warning-soft">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-muted">中风险评估</h6>
+                        <h2 class="card-title mb-0 text-warning" id="medium-risk-count">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card high h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-bg bg-warning-soft">
+                        <i class="bi bi-exclamation-triangle text-orange"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-muted">高风险评估</h6>
+                        <h2 class="card-title mb-0 text-orange" id="high-risk-count">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card critical h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-bg bg-danger-soft">
+                        <i class="bi bi-shield-exclamation text-danger"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-muted">严重风险评估</h6>
+                        <h2 class="card-title mb-0 text-danger" id="critical-risk-count">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 图表和最近分析 -->
+    <div class="row mb-4">
+        <!-- 风险趋势图 -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> 风险趋势分析</h5>
+                    <div class="ms-auto">
+                        <select class="form-select form-select-sm" id="trend-timeframe">
+                            <option value="hour">最近1小时</option>
+                            <option value="day">最近24小时</option>
+                            <option value="week">最近1周</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="risk-trend-chart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 最近分析结果 -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> 最近分析结果</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush" id="recent-analyses">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">加载中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 关键词和分析指标 -->
+    <div class="row">
+        <!-- 高频敏感关键词 -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-tags"></i> 高频敏感关键词</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="keywords-chart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 综合分析指标 -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> 综合分析指标</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="analysis-metrics-chart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 更新时钟
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent = now.toLocaleTimeString('zh-CN');
+        document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+    
+    // 初始化图表
+    function initCharts() {
+        // 风险趋势图
+        const trendCtx = document.getElementById('risk-trend-chart').getContext('2d');
+        window.riskTrendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '风险评分',
+                    data: [],
+                    borderColor: '#1e3c72',
+                    backgroundColor: 'rgba(30, 60, 114, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            callback: value => value.toFixed(1)
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `风险评分: ${context.parsed.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 关键词图表
+        const keywordsCtx = document.getElementById('keywords-chart').getContext('2d');
+        window.keywordsChart = new Chart(keywordsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['关键词1', '关键词2', '关键词3', '关键词4', '关键词5'],
+                datasets: [{
+                    label: '出现次数',
+                    data: [12, 10, 8, 7, 5],
+                    backgroundColor: [
+                        'rgba(30, 60, 114, 0.7)',
+                        'rgba(42, 82, 152, 0.7)',
+                        'rgba(54, 105, 190, 0.7)',
+                        'rgba(72, 130, 213, 0.7)',
+                        'rgba(92, 142, 215, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // 分析指标图表
+        const metricsCtx = document.getElementById('analysis-metrics-chart').getContext('2d');
+        window.metricsChart = new Chart(metricsCtx, {
+            type: 'radar',
+            data: {
+                labels: ['关键词分析', '语义分析', '逻辑一致性', '历史对比', '上下文理解'],
+                datasets: [{
+                    label: '系统能力评分',
+                    data: [0.85, 0.72, 0.78, 0.65, 0.8],
+                    backgroundColor: 'rgba(30, 60, 114, 0.2)',
+                    borderColor: '#1e3c72',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#1e3c72',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#1e3c72'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 1
+                    }
+                }
+            }
+        });
+    }
+    
+    // 加载风险统计数据
+    function loadStats() {
+        fetch('/api/analysis/stats')
+            .then(response => response.json())
+            .then(data => {
+                // 更新风险统计
+                document.getElementById('low-risk-count').textContent = data.risk_levels.low || 0;
+                document.getElementById('medium-risk-count').textContent = data.risk_levels.medium || 0;
+                document.getElementById('high-risk-count').textContent = data.risk_levels.high || 0;
+                document.getElementById('critical-risk-count').textContent = data.risk_levels.critical || 0;
+                
+                // 更新趋势图表
+                updateTrendChart(data.trend);
+            })
+            .catch(error => console.error('加载统计数据失败:', error));
+    }
+    
+    // 更新趋势图表
+    function updateTrendChart(trendData) {
+        if (!trendData || !trendData.length || !window.riskTrendChart) {
+            return;
+        }
+        
+        const labels = trendData.map(item => {
+            const date = new Date(item.time);
+            return date.toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'});
+        });
+        
+        const data = trendData.map(item => item.score);
+        
+        window.riskTrendChart.data.labels = labels;
+        window.riskTrendChart.data.datasets[0].data = data;
+        window.riskTrendChart.update();
+    }
+    
+    // 加载最近分析结果
+    function loadRecentAnalyses() {
+        fetch('/api/analysis/recent')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('recent-analyses');
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4">暂无分析数据</div>';
+                    return;
+                }
+                
+                // 清空容器
+                container.innerHTML = '';
+                
+                // 添加最近分析结果
+                data.slice(-5).reverse().forEach(item => {
+                    const time = new Date(item.timestamp).toLocaleTimeString('zh-CN');
+                    const riskClass = getRiskClass(item.risk_level);
+                    const riskBadge = getRiskBadge(item.risk_level);
+                    
+                    const element = document.createElement('div');
+                    element.className = 'list-group-item list-group-item-action';
+                    element.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 text-truncate" style="max-width: 70%;">${item.text.substring(0, 50)}${item.text.length > 50 ? '...' : ''}</h6>
+                            <small>${time}</small>
+                        </div>
+                        <div class="d-flex align-items-center mt-1">
+                            ${riskBadge}
+                            <small class="ms-auto">${(item.risk_score * 100).toFixed(0)}% 风险值</small>
+                        </div>
+                    `;
+                    
+                    container.appendChild(element);
+                });
+            })
+            .catch(error => {
+                console.error('加载最近分析结果失败:', error);
+                document.getElementById('recent-analyses').innerHTML = 
+                    '<div class="text-center py-4">加载失败，请稍后重试</div>';
+            });
+    }
+    
+    // 获取风险级别对应的CSS类
+    function getRiskClass(level) {
+        switch(level) {
+            case 'critical': return 'danger';
+            case 'high': return 'warning text-dark';
+            case 'medium': return 'info text-dark';
+            case 'low': 
+            default: return 'success';
+        }
+    }
+    
+    // 获取风险级别对应的徽章HTML
+    function getRiskBadge(level) {
+        const riskClass = getRiskClass(level);
+        const riskText = {
+            'critical': '严重风险',
+            'high': '高风险',
+            'medium': '中风险',
+            'low': '低风险'
+        }[level] || '未知风险';
+        
+        return `<span class="badge bg-${riskClass}">${riskText}</span>`;
+    }
+    
+    // 初始化Socket.IO连接
+    function initSocketConnection() {
+        const socket = io();
+        
+        socket.on('connect', () => {
+            console.log('WebSocket连接已建立');
+        });
+        
+        socket.on('new_analysis', (data) => {
+            console.log('收到新分析结果:', data);
+            // 重新加载数据
+            loadStats();
+            loadRecentAnalyses();
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('WebSocket连接已断开');
+        });
+    }
+    
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化时钟并每秒更新
+        updateClock();
+        setInterval(updateClock, 1000);
+        
+        // 初始化图表
+        initCharts();
+        
+        // 加载统计数据和最近分析结果
+        loadStats();
+        loadRecentAnalyses();
+        
+        // 初始化WebSocket连接
+        initSocketConnection();
+        
+        // 定期刷新数据
+        setInterval(loadStats, 30000); // 每30秒
+        setInterval(loadRecentAnalyses, 10000); // 每10秒
+        
+        // 处理时间范围选择变化
+        document.getElementById('trend-timeframe').addEventListener('change', function() {
+            // 这里可以根据所选时间范围重新加载趋势数据
+            loadStats();
+        });
+    });
+</script>
+{% endblock %}
