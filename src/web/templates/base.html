@@ -83,12 +83,13 @@
     <!-- 主内容 -->
     <main>
         {% block content %}{% endblock %}
-    </main>
-
-    <!-- 页脚 -->
+    </main>    <!-- 页脚 -->
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
-            <span class="text-muted">© {{ now.year }} 课堂语义行为实时分析系统</span>
+            <span class="text-muted">© {{ now.year }} 课堂语义行为实时分析系统 v0.2.0</span>
+            <div class="small text-muted mt-1">
+                <span>语音识别 · 语义分析 · 风险评估</span>
+            </div>
         </div>
     </footer>
 

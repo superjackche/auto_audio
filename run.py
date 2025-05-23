@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 课堂语义行为实时分析系统 - 主启动脚本
@@ -22,20 +20,72 @@ sys.path.insert(0, str(ROOT_DIR))
 # 打印启动标志
 print("""
 ┌─────────────────────────────────────────────────┐
-│   课堂语义行为实时分析系统 v0.1.0               │
+│   课堂语义行为实时分析系统 v0.2.1               │
 │                                                 │
 │   自动监测和分析课堂语音内容，识别潜在风险      │
+│   Python 3.13 兼容版本                         │
 └─────────────────────────────────────────────────┘
 """)
 
+# 显示Python版本信息
+python_version = sys.version_info
+print(f"Python 版本: {python_version.major}.{python_version.minor}.{python_version.micro}")
+
+if python_version >= (3, 13):
+    print("⚠️  检测到Python 3.13+，某些功能使用兼容性实现")
+
+print("正在检查系统模块...")
+
 # 尝试导入必要的模块
+module_status = {}
 try:
     from src.web.app import app, socketio
-    from src.utils.config_loader import ConfigLoader
+    module_status['web'] = True
+    print("✓ Web应用模块导入成功")
 except ImportError as e:
-    print(f"错误: 导入模块失败 - {e}")
+    module_status['web'] = False
+    print(f"✗ Web应用模块导入失败: {e}")
+
+try:
+    from src.utils.config_loader import ConfigLoader
+    module_status['config'] = True
+    print("✓ 配置加载器导入成功")
+except ImportError as e:
+    module_status['config'] = False
+    print(f"✗ 配置加载器导入失败: {e}")
+
+# 检查其他关键模块
+try:
+    from src.audio.speech_to_text import SpeechToText
+    module_status['speech'] = True
+    print("✓ 语音转文字模块导入成功")
+except ImportError as e:
+    module_status['speech'] = False
+    print(f"✗ 语音转文字模块导入失败: {e}")
+
+try:
+    from src.nlp.analyzer import SemanticAnalyzer
+    module_status['nlp'] = True
+    print("✓ 语义分析模块导入成功")
+except ImportError as e:
+    module_status['nlp'] = False
+    print(f"✗ 语义分析模块导入失败: {e}")
+
+# 如果关键模块导入失败，退出
+if not module_status.get('web', False) or not module_status.get('config', False):
+    print("\n错误: 关键模块导入失败")
     print("请确保已安装所有依赖: pip install -r requirements.txt")
+    if python_version >= (3, 13):
+        print("或运行兼容性检查: python python313_compatibility_check.py")
     sys.exit(1)
+
+# 显示模块状态摘要
+success_count = sum(module_status.values())
+total_count = len(module_status)
+print(f"\n模块检查完成: {success_count}/{total_count} 个模块正常")
+
+if success_count < total_count:
+    print("注意: 某些模块有问题，但系统会使用后备实现继续运行")
 
 # 配置日志
 logging.basicConfig(

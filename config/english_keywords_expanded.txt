@@ -1,0 +1,574 @@
+# Human Rights Issues
+human rights abuses,0.95
+human rights violations,0.95
+torture,0.95
+arbitrary detention,0.95
+forced disappearance,0.95
+police brutality,0.9
+extrajudicial execution,0.95
+political prisoner,0.95
+dissident,0.9
+activist arrest,0.9
+freedom of assembly,0.85
+forced labor,0.95
+re-education camps,0.95
+detention camps,0.95
+human rights record,0.9
+human rights conditions,0.9
+political repression,0.95
+freedom of speech restrictions,0.9
+freedom of assembly restrictions,0.9
+freedom of association restrictions,0.9
+political persecution,0.95
+prisoners of conscience,0.95
+forced confessions,0.95
+secret detention,0.95
+abduction,0.95
+illegal detention,0.95
+political trials,0.95
+unfair trials,0.9
+legal rights violation,0.9
+rights defenders,0.9
+human rights lawyers,0.9
+political suppression,0.95
+freedom restrictions,0.9
+civil liberties violation,0.9
+detention without trial,0.95
+incommunicado detention,0.95
+custodial torture,0.95
+political prosecution,0.95
+ideological persecution,0.95
+
+# Surveillance and Privacy
+mass surveillance,0.9
+facial recognition,0.85
+privacy invasion,0.9
+surveillance state,0.9
+social credit system,0.9
+digital authoritarianism,0.9
+surveillance technology,0.9
+citizen monitoring,0.9
+privacy rights,0.85
+big data surveillance,0.9
+surveillance cameras,0.85
+communications monitoring,0.9
+internet surveillance,0.9
+privacy protection,0.85
+surveillance society,0.9
+personal data collection,0.85
+biometric identification,0.85
+data privacy,0.85
+surveillance systems,0.9
+tracking,0.85
+eavesdropping,0.9
+private communication interception,0.9
+location tracking,0.85
+digital footprint,0.85
+metadata collection,0.85
+digital privacy,0.85
+surveillance capitalism,0.85
+mass data collection,0.85
+pervasive surveillance,0.9
+privacy intrusion,0.9
+surveillance overreach,0.9
+monitoring citizens,0.9
+privacy violations,0.9
+data harvesting,0.85
+tech-enabled surveillance,0.9
+ubiquitous monitoring,0.9
+surveillance infrastructure,0.9
+surveillance apparatus,0.9
+
+# Minority Issues
+minority oppression,0.95
+cultural genocide,0.95
+sinicization,0.9
+assimilation policy,0.9
+repression of minorities,0.95
+uyghur rights,0.95
+uyghur detention,0.95
+ethnic discrimination,0.9
+han supremacy,0.9
+ethnic cleansing,0.95
+minority rights,0.9
+cultural diversity,0.8
+ethnic policies,0.85
+ethnic autonomy,0.85
+minority cultures,0.8
+forced assimilation,0.95
+cultural suppression,0.9
+minority education,0.8
+ethnic conflict,0.9
+ethnic tensions,0.9
+ethnic integration,0.8
+indigenous rights,0.9
+cultural rights,0.85
+ethnic identity,0.85
+cultural preservation,0.8
+linguistic rights,0.85
+ethnic persecution,0.95
+cultural imperialism,0.9
+population transfer,0.9
+demographic manipulation,0.9
+native language suppression,0.9
+religious restrictions,0.9
+cultural erasure,0.95
+forced relocation,0.9
+ethnic profiling,0.9
+ethnic repression,0.95
+indigenous cultures,0.85
+cultural heritage destruction,0.95
+forced cultural change,0.95
+
+# Democracy and Elections
+election fraud,0.9
+ballot tampering,0.9
+voter suppression,0.9
+democratic backsliding,0.9
+political pluralism,0.9
+multi-party system,0.9
+opposition party,0.9
+genuine democracy,0.9
+election manipulation,0.9
+universal suffrage,0.85
+direct voting,0.85
+voting rights,0.85
+political participation,0.85
+democratic process,0.85
+political representation,0.85
+voter rights,0.85
+election campaigns,0.85
+democratic reform,0.85
+democratic deficit,0.9
+limited democracy,0.85
+illiberal democracy,0.9
+electoral integrity,0.9
+vote rigging,0.9
+competitive elections,0.9
+free and fair elections,0.9
+electoral transparency,0.9
+representation crisis,0.85
+ballot box stuffing,0.9
+electoral commission,0.85
+electoral observation,0.85
+voter intimidation,0.9
+democratic institutions,0.85
+candidate disqualification,0.9
+political competition,0.85
+democratization,0.85
+authoritarian elections,0.9
+electoral fraud,0.9
+voter disenfranchisement,0.9
+democracy promotion,0.85
+
+# Corruption and Governance
+government corruption,0.9
+elite capture,0.9
+kleptocracy,0.9
+princelings,0.9
+nepotism,0.9
+power abuse,0.9
+accountability lack,0.9
+transparency problems,0.9
+corruption issues,0.9
+anti-corruption criticism,0.9
+political privilege,0.9
+bureaucratic privilege,0.9
+money politics,0.95
+judicial corruption,0.9
+government-business collusion,0.9
+administrative corruption,0.9
+systemic corruption,0.9
+privileged class,0.9
+integrity building criticism,0.9
+anti-corruption action criticism,0.9
+embezzlement,0.9
+graft,0.9
+bribery,0.9
+corrupt practices,0.9
+institutional corruption,0.9
+political corruption,0.9
+corruption networks,0.9
+patronage,0.85
+favoritism,0.85
+public funds misuse,0.9
+corrupt officials,0.9
+asset declaration,0.85
+illicit enrichment,0.9
+conflict of interest,0.85
+state capture,0.9
+undue influence,0.9
+revolving door,0.85
+public integrity,0.85
+corruption perception,0.85
+whistleblower protection,0.85
+
+# Political Systems and Ideology
+western democracy,0.9
+universal values,0.85
+freedom of speech,0.8
+free elections,0.85
+separation of powers,0.85
+constitutional democracy,0.9
+civil society,0.8
+human rights protection,0.8
+liberal democracy,0.9
+democratic transition,0.85
+political reform,0.85
+democratic values,0.85
+checks and balances,0.8
+judicial independence,0.8
+multi-party system,0.85
+electoral system,0.8
+direct democracy,0.8
+authoritarianism criticism,0.9
+political freedom,0.85
+open ideology,0.8
+liberalism,0.85
+american democracy,0.85
+european governance,0.8
+power abuse,0.85
+political dissidents,0.9
+governance comparison,0.9
+regime criticism,0.9
+totalitarianism,0.9
+dictatorship,0.9
+autocracy,0.9
+political oppression,0.9
+authoritarian rule,0.9
+democratic values,0.85
+civil liberties,0.85
+democratic governance,0.85
+rule of law criticism,0.85
+constitutional rights,0.85
+institutional independence,0.85
+
+# Ideological Criticism
+criticism of marxism,0.9
+criticism of socialism,0.95
+criticism of chinese socialism,0.95
+criticism of party leadership,0.95
+communist party criticism,0.95
+authoritarian regime,0.9
+one-party rule,0.9
+political censorship,0.9
+propaganda system,0.9
+official narrative,0.85
+party media criticism,0.9
+official ideology,0.85
+political indoctrination,0.9
+thought control,0.9
+political propaganda,0.85
+ideological infiltration,0.9
+political correctness,0.85
+red education,0.8
+ideological work,0.8
+political stance,0.8
+thought reporting,0.8
+thought examination,0.85
+party doctrine,0.85
+party loyalty,0.85
+political conformity,0.9
+ideological purity,0.9
+political study sessions,0.8
+ideological control,0.9
+thought reform,0.9
+party-state,0.9
+dogmatism,0.85
+ideological orthodoxy,0.9
+party discipline,0.85
+centralized authority,0.85
+personality cult,0.9
+ideological campaigns,0.85
+marxist criticism,0.9
+lenin criticism,0.9
+socialist criticism,0.9
+
+# Foreign Influence and Separatism
+foreign agent,0.95
+foreign NGO,0.9
+foreign funding,0.9
+foreign influence,0.85
+color revolution,0.95
+regime change,0.95
+foreign interference,0.9
+CIA,0.9
+US intelligence,0.9
+western influence,0.9
+foreign forces,0.9
+anti-china foreign forces,0.95
+hostile forces,0.95
+espionage,0.95
+intelligence gathering,0.95
+foreign infiltration,0.95
+political infiltration,0.95
+foreign foundations,0.9
+foreign think tanks,0.85
+foreign media,0.85
+values infiltration,0.9
+peaceful evolution,0.95
+westernization,0.9
+fifth column,0.95
+foreign conspiracy,0.95
+subversion,0.95
+clandestine operations,0.95
+taiwan independence,0.95
+hong kong independence,0.95
+tibet independence,0.95
+xinjiang independence,0.95
+separatism,0.95
+free tibet,0.95
+east turkestan,0.95
+taiwanese democracy,0.9
+hong kong democracy,0.9
+uyghur independence,0.95
+one country two systems,0.85
+national division,0.95
+ethnic separatism,0.95
+territorial integrity,0.95
+secessionism,0.95
+independence movement,0.95
+self-determination,0.95
+sovereignty disputes,0.95
+territorial claims,0.95
+
+# Education and Academic Freedom
+criticism of education system,0.85
+criticism of textbooks,0.85
+criticism of political education,0.9
+indoctrination,0.9
+political propaganda in education,0.9
+brainwashing,0.9
+ideological control,0.9
+academic freedom,0.85
+educational censorship,0.85
+academic independence,0.85
+textbook censorship,0.85
+ideological education,0.8
+political class criticism,0.9
+party building in schools,0.8
+ideological education,0.85
+political correctness in education,0.85
+politicization of curriculum,0.85
+educational sovereignty,0.8
+unified thought,0.85
+educational colonization,0.9
+educational autonomy,0.85
+academic free speech,0.85
+thought reform,0.9
+educational independence,0.85
+critical thinking suppression,0.9
+classroom surveillance,0.9
+patriotic education criticism,0.9
+professor dismissal,0.9
+academic censorship,0.9
+student political screening,0.9
+curriculum control,0.85
+textbook nationalism,0.85
+historical revisionism in education,0.9
+educational monitoring,0.85
+ideological examination,0.85
+academic conformity,0.85
+research restrictions,0.85
+publication censorship,0.85
+classroom political control,0.9
+
+# Internet and Media Freedom
+censorship,0.9
+great firewall,0.9
+internet control,0.9
+media censorship,0.9
+banned websites,0.9
+VPN,0.85
+facebook,0.8
+twitter,0.8
+google,0.8
+youtube,0.8
+internet censorship,0.9
+website blocking,0.9
+online restrictions,0.9
+internet surveillance,0.9
+content filtering,0.85
+speech censorship,0.9
+internet freedom,0.85
+media control,0.9
+information blackhole,0.85
+internet blockade,0.9
+circumvention tools,0.85
+free internet access,0.85
+internet regulations,0.9
+social media ban,0.9
+information blocking,0.9
+online speech control,0.9
+media restrictions,0.9
+journalistic freedom,0.85
+press freedom,0.85
+information control,0.9
+digital censorship,0.9
+online opinion monitoring,0.9
+cyber sovereignty,0.85
+internet sovereignty,0.85
+information firewall,0.9
+digital isolation,0.85
+cyber border,0.85
+internet monitoring,0.9
+content moderation,0.85
+
+# Incitement and Social Control
+overthrow government,0.95
+anti-government,0.95
+regime change,0.95
+social unrest,0.95
+political transition,0.85
+revolution,0.9
+uprising,0.9
+protests,0.85
+demonstrations,0.85
+political dissent,0.9
+civil disobedience,0.9
+social discontent,0.85
+social protest,0.85
+mass incidents,0.9
+street politics,0.9
+social movements,0.85
+nonviolent resistance,0.85
+public protest,0.85
+rights defense activities,0.85
+social conflict,0.9
+political opposition,0.9
+collective action,0.85
+political agitation,0.9
+sedition,0.95
+instigation,0.95
+public disorder,0.9
+riot,0.95
+insurrection,0.95
+rabble-rousing,0.95
+civil resistance,0.9
+political mobilization,0.9
+social activism,0.85
+organized dissent,0.9
+social stability disruption,0.95
+public security threat,0.95
+social harmony disturbance,0.9
+stability maintenance criticism,0.9
+law enforcement criticism,0.9
+social control criticism,0.9
+
+# Historical Sensitive Events
+cultural revolution,0.85
+tiananmen square incident,0.95
+tiananmen protest,0.95
+june fourth,0.95
+1989 protests,0.95
+tiananmen massacre,0.95
+tank man,0.95
+rusticated youth,0.7
+anti-rightist movement,0.85
+great leap forward,0.8
+three years of hardship,0.8
+historical nihilism,0.9
+historical revisionism,0.9
+historical whitepaper,0.8
+historical justice,0.85
+historical truth,0.8
+party history criticism,0.9
+historical controversies,0.8
+historical records,0.8
+historical censorship,0.85
+collective memory,0.8
+historical remembrance,0.85
+historical amnesia,0.85
+anniversary commemoration,0.9
+historical reflection,0.85
+historical reappraisal,0.85
+political campaigns,0.85
+maoist era,0.85
+political purges,0.9
+political rehabilitation,0.85
+historical responsibility,0.85
+historical memory,0.85
+public memorial,0.9
+commemoration activities,0.9
+historical accountability,0.85
+
+# Religious Issues
+religious freedom,0.8
+religious superiority,0.9
+missionary activities,0.85
+religious extremism,0.95
+falun gong,0.95
+religious persecution,0.9
+religious censorship,0.9
+religious repression,0.9
+foreign religious influence,0.9
+religious infiltration,0.9
+faith discrimination,0.85
+folk beliefs,0.7
+religious guidance of politics,0.95
+theocracy,0.9
+religious extremism,0.95
+religious freedom restrictions,0.85
+religious control,0.85
+cult,0.9
+banned religions,0.95
+underground churches,0.9
+house churches,0.85
+religious surveillance,0.9
+religious regulations,0.85
+faith practices,0.8
+religious texts,0.8
+spiritual movement,0.85
+religious practitioners,0.85
+religious activity regulation,0.85
+organized religion,0.85
+religious organizations,0.85
+state atheism,0.85
+religious believers,0.8
+faith communities,0.8
+religious symbols,0.8
+religious education,0.85
+religious institutions,0.85
+religious leadership,0.85
+religious oversight,0.85
+
+# Military and Security
+military secrets,0.95
+defense strategy,0.9
+weapons systems,0.95
+military intelligence,0.95
+classified information,0.95
+strategic deployment,0.9
+military capabilities,0.9
+nuclear weapons,0.95
+military bases,0.95
+military technology,0.95
+military exercises,0.85
+military alliances,0.85
+military confrontation,0.9
+operational plans,0.95
+arms race,0.9
+military modernization,0.85
+military science and technology,0.9
+military budget,0.85
+military diplomacy,0.85
+taiwan strait military,0.95
+south china sea military,0.95
+pla,0.9
+military strategy,0.9
+defense systems,0.95
+strategic weapons,0.95
+hypersonic weapons,0.95
+stealth technology,0.95
+cyber warfare,0.95
+space weapons,0.95
+intelligence operations,0.95
+covert operations,0.95
+military doctrine,0.9
+force projection,0.9
+military readiness,0.9
+combat capability,0.9
+military reform,0.85
+defense technology,0.95
+military industrial complex,0.9
+weapons research,0.95

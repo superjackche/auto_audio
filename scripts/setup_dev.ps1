@@ -1,6 +1,29 @@
 # 开发环境初始化脚本
 Write-Host "正在设置开发环境..." -ForegroundColor Green
 
+# 检查Python版本
+try {
+    $pythonVersion = python --version 2>&1
+    Write-Host "检测到: $pythonVersion" -ForegroundColor Green
+    
+    # 提取版本号
+    $versionMatch = [regex]::Match($pythonVersion, "(\d+)\.(\d+)")
+    if ($versionMatch.Success) {
+        $major = [int]$versionMatch.Groups[1].Value
+        $minor = [int]$versionMatch.Groups[2].Value
+        
+        if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 11)) {
+            Write-Host "警告: 建议使用Python 3.11或更高版本" -ForegroundColor Yellow
+            Write-Host "按任意键继续或Ctrl+C退出..." -ForegroundColor Yellow
+            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        }
+    }
+}
+catch {
+    Write-Host "无法检测Python版本，请确保Python已正确安装" -ForegroundColor Red
+    exit 1
+}
+
 # 创建虚拟环境
 python -m venv .venv
 if ($LASTEXITCODE -ne 0) {

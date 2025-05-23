@@ -1,0 +1,127 @@
+# filepath: d:/Code/auto_audio/config/config.example.yaml
+# 课堂语义行为实时分析系统配置文件 (示例)
+# 请复制此文件为 config.yaml 并填入你的实际配置和密钥
+# config.yaml 已被加入 .gitignore，不会提交到版本库
+
+# 系统通用配置
+system:
+  name: "课堂语义行为实时分析系统"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+# 音频捕获配置
+audio:
+  sample_rate: 16000
+  channels: 1
+  chunk_size: 1024
+  record_seconds: 5
+  device_index: null  # null表示使用默认设备
+  vad_enabled: true  # 语音活动检测
+  vad_threshold: 0.5
+
+# 语音识别配置
+speech_to_text:
+  engine: "whisper"  # whisper, pocketsphinx, google, azure
+  model: "medium"  # tiny, base, small, medium, large
+  language: "auto"
+  use_gpu: true
+  offline_mode: true
+  api_key: "YOUR_API_KEY_HERE"  # 仅在使用在线API时需要
+
+  # 在线API设置（可选）
+  azure:
+    key: "YOUR_AZURE_SPEECH_KEY_HERE"
+    region: "eastasia"
+  google:
+    credentials_file: "path/to/your/google_credentials.json"
+  openai:
+    key: "YOUR_OPENAI_API_KEY_HERE"
+
+# 自然语言处理配置
+nlp:
+  # 词向量模型
+  embedding_model: "bert-base-multilingual-cased"
+  tokenizer: "jieba"
+
+  # 关键词监测
+  keyword_detection:
+    enabled: true
+    keyword_file: "config/keywords_expanded.txt" # 使用扩展的关键词文件
+    english_keyword_file: "config/english_keywords_expanded.txt" # 使用扩展的英文关键词文件
+    weight: 0.4
+
+  # 语义分析
+  semantic_analysis:
+    enabled: true
+    model: "local"  # local, api
+    local_model_path: "data/models/bert_classifier"
+    api_url: null
+    api_key: "YOUR_SEMANTIC_API_KEY_HERE"
+    weight: 0.3
+
+  # 逻辑一致性分析
+  logic_analysis:
+    enabled: true
+    history_window: 10  # 保留多少条历史记录进行分析
+    weight: 0.3
+
+# 风险评估配置
+risk_assessment:
+  # 风险级别阈值 (0-1范围)
+  low_threshold: 0.3
+  medium_threshold: 0.6
+  high_threshold: 0.8
+
+  # 预警设置
+  alert_threshold: 0.7  # 超过此值将触发预警
+  alert_method: ["console", "web"]  # console, web, email, sms
+
+  # 预警通知配置
+  email:
+    enabled: false
+    smtp_server: "smtp.example.com"
+    smtp_port: 587
+    username: "alert@example.com"
+    password: "YOUR_EMAIL_PASSWORD_HERE"
+    recipients: ["admin@example.com"]
+
+  sms:
+    enabled: false
+    api_key: "YOUR_SMS_API_KEY_HERE"
+    recipients: ["+86123456789"]
+
+# Web界面配置
+web:
+  enabled: true
+  host: "127.0.0.1"
+  port: 5000
+  debug: false
+  secret_key: "REPLACE_THIS_WITH_A_STRONG_RANDOM_SECRET_KEY" # 必须更改
+  users:
+    admin:
+      username: "admin"
+      # 生成一个安全的哈希值替换下面的示例
+      # 可以使用 tools/generate_password_hash.py
+      password_hash: "pbkdf2:sha256:260000$YOUR_SALT_HERE$YOUR_HASH_HERE"
+
+# 数据存储配置
+storage:
+  database:
+    type: "sqlite"  # sqlite, mysql, postgresql
+    # 对于 sqlite, path 是相对于项目根目录的路径
+    path: "data/classroom_monitor.db" # 此文件会被 .gitignore 忽略
+
+  # MySQL设置（如果使用）
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "classroom_monitor"
+    username: "root"
+    password: "YOUR_MYSQL_PASSWORD_HERE"
+
+  # 报告设置
+  reports:
+    save_path: "data/reports"
+    auto_generate: true
+    generation_interval: 86400  # 以秒为单位，默认为每天

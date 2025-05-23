@@ -14,18 +14,38 @@ from datetime import datetime
 from collections import deque
 
 # 适配可能使用的NLP库
+import sys
+JIEBA_AVAILABLE = False
+BERT_AVAILABLE = False
+
+# jieba中文分词库
 try:
     import jieba
+    import jieba.posseg as pseg
     JIEBA_AVAILABLE = True
+    logger = logging.getLogger(__name__)
+    logger.info("✓ jieba 中文分词库已加载")
 except ImportError:
-    JIEBA_AVAILABLE = False
-    
+    logger = logging.getLogger(__name__)
+    logger.warning("⚠ jieba 库不可用，将使用简化分词方案")
+
+# BERT模型相关
 try:
     import torch
     from transformers import BertTokenizer, BertModel
     BERT_AVAILABLE = True
+    logger.info("✓ BERT 模型库已加载")
 except ImportError:
-    BERT_AVAILABLE = False
+    logger.warning("⚠ transformers 库不可用，将使用简化语义分析")
+
+# 其他NLP库
+try:
+    import spacy
+    SPACY_AVAILABLE = True
+    logger.info("✓ spaCy 库已加载")
+except ImportError:
+    SPACY_AVAILABLE = False
+    logger.warning("⚠ spaCy 库不可用")
 
 logger = logging.getLogger(__name__)
 
@@ -99,8 +119,7 @@ class TextAnalyzer:
                         word = parts[0].strip()
                         try:
                             weight = float(parts[1].strip())
-                        except Exception:
-                            weight = 0.5
+                        except Exception:                        weight = 0.5
                         keywords[word] = weight
             logger.info(f"成功加载关键词文件: {file_path}")
         except Exception as e:
@@ -116,8 +135,8 @@ class TextAnalyzer:
         """
         if self.tokenizer_name == 'jieba':
             if not JIEBA_AVAILABLE:
-                logger.error("未安装jieba模块，请使用 'pip install jieba'")
-                raise ImportError("未安装jieba模块")
+                logger.warning("jieba不可用，将使用简单分词替代方案")
+                return self._create_simple_tokenizer()
                 
             # 加载用户词典（如果有）
             user_dict = self.config.get('user_dict')
@@ -130,13 +149,133 @@ class TextAnalyzer:
             if not BERT_AVAILABLE:
                 logger.error("未安装transformers模块，请使用 'pip install transformers'")
                 raise ImportError("未安装transformers模块")
-                
             tokenizer = BertTokenizer.from_pretrained(self.embedding_model_name)
             logger.info(f"BERT分词器初始化完成: {self.embedding_model_name}")
             return tokenizer
         else:
-            logger.error(f"不支持的分词器: {self.tokenizer_name}")
-            raise ValueError(f"不支持的分词器: {self.tokenizer_name}")
+            logger.warning(f"不支持的分词器: {self.tokenizer_name}，将使用简单分词替代方案")
+            return self._create_simple_tokenizer()
+    
+    def _create_simple_tokenizer(self):
+        """
+        创建增强的分词器替代方案
+        """
+        class EnhancedTokenizer:
+            def __init__(self):
+                # 常见停用词
+                self.stopwords = set([
+                    '的', '了', '在', '是', '我', '有', '和', '就', '不', '人', '都', '一', '一个',
+                    '上', '也', '很', '到', '说', '要', '去', '你', '会', '着', '没有', '看', '好',
+                    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of',
+                    'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have',
+                    'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'
+                ])
+            
+            def lcut(self, text):
+                """增强的中英文分词"""
+                import re
+                if not text:
+                    return []
+                
+                # 预处理：清理文本
+                text = re.sub(r'\s+', ' ', text.strip())
+                
+                # 分离中文字符、英文单词、数字等
+                # 改进的正则表达式，更好地处理混合文本
+                patterns = [
+                    r'[\u4e00-\u9fff]+',  # 中文字符
+                    r'[a-zA-Z]+(?:\'[a-zA-Z]+)*',  # 英文单词（包括缩写）
+                    r'\d+(?:\.\d+)?',  # 数字（包括小数）
+                    r'[!@#$%^&*(),.?":{}|<>]'  # 特殊符号
+                ]
+                
+                tokens = []
+                for pattern in patterns:
+                    matches = re.findall(pattern, text)
+                    tokens.extend(matches)
+                    # 从原文本中移除已匹配的部分
+                    text = re.sub(pattern, ' ', text)
+                
+                # 进一步处理中文文本：简单的字符级分词
+                chinese_tokens = []
+                for token in tokens:
+                    if re.match(r'[\u4e00-\u9fff]+', token):
+                        # 对于中文，尝试按语义单元分割
+                        chinese_tokens.extend(self._segment_chinese(token))
+                    else:
+                        chinese_tokens.append(token)
+                
+                # 过滤停用词和短词
+                filtered_tokens = []
+                for token in chinese_tokens:
+                    token = token.strip().lower()
+                    if len(token) >= 1 and token not in self.stopwords:
+                        filtered_tokens.append(token)
+                
+                return filtered_tokens
+            
+            def _segment_chinese(self, text):
+                """简单的中文分词"""
+                # 基于词典的简单中文分词
+                common_words = {
+                    '语音': 2, '识别': 2, '文本': 2, '分析': 2, '系统': 2, '课堂': 2,
+                    '学生': 2, '老师': 2, '教学': 2, '学习': 2, '问题': 2, '内容': 2,
+                    '时间': 2, '方法': 2, '知识': 2, '技术': 2, '数据': 2, '信息': 2,
+                    '网络': 2, '计算机': 3, '人工智能': 4, '机器学习': 4, '深度学习': 4
+                }
+                
+                result = []
+                i = 0
+                while i < len(text):
+                    matched = False
+                    # 尝试最长匹配
+                    for length in range(min(6, len(text) - i), 0, -1):
+                        word = text[i:i+length]
+                        if word in common_words:
+                            result.append(word)
+                            i += length
+                            matched = True
+                            break
+                    
+                    if not matched:
+                        # 单字符处理
+                        if len(text[i]) > 0:
+                            result.append(text[i])
+                        i += 1
+                
+                return result
+            
+            def cut(self, text):
+                """兼容jieba的cut方法"""
+                return self.lcut(text)
+            
+            def posseg(self, text):
+                """简单的词性标注"""
+                tokens = self.lcut(text)
+                # 简单的词性推断
+                tagged = []
+                for token in tokens:
+                    if re.match(r'\d+', token):
+                        pos = 'm'  # 数词
+                    elif re.match(r'[a-zA-Z]+', token):
+                        pos = 'eng'  # 英文
+                    elif len(token) == 1 and re.match(r'[\u4e00-\u9fff]', token):
+                        pos = 'n'  # 默认名词
+                    else:
+                        pos = 'n'  # 默认名词
+                    
+                    # 创建一个简单的对象来模拟jieba.posseg的返回值
+                    class Word:
+                        def __init__(self, word, flag):
+                            self.word = word
+                            self.flag = flag
+                    
+                    tagged.append(Word(token, pos))
+                
+                return tagged
+                
+        logger.info("增强分词器初始化完成")
+        return EnhancedTokenizer()
     
     def _initialize_embedding_model(self):
         """
@@ -515,3 +654,6 @@ class TextAnalyzer:
         total_chars = len(text.strip())
         
         return total_chars > 0 and chinese_chars / total_chars > 0.5
+
+# 为了向后兼容，创建SemanticAnalyzer别名
+SemanticAnalyzer = TextAnalyzer

@@ -1,0 +1,705 @@
+{% extends "base.html" %}
+
+{% block title %}AI智能反馈系统 - 音频文件分析{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modern-style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .language-toggle {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        gap: 0.5rem;
+    }
+    
+    .language-toggle .btn {
+        min-width: 100px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .language-toggle .btn.active {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .upload-zone {
+        border: 2px dashed var(--primary-color);
+        border-radius: 15px;
+        padding: 3rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, rgba(139, 69, 190, 0.1), rgba(88, 86, 214, 0.1));
+        cursor: pointer;
+    }
+    
+    .upload-zone:hover {
+        border-color: var(--accent-color);
+        background: linear-gradient(135deg, rgba(139, 69, 190, 0.2), rgba(88, 86, 214, 0.2));
+        transform: translateY(-2px);
+    }
+    
+    .upload-zone.drag-over {
+        border-color: var(--success-color);
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(32, 201, 151, 0.2));
+    }
+    
+    .upload-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .analysis-results {
+        display: none;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    .risk-meter {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+    }
+    
+    .risk-chart {
+        width: 100%;
+        height: 300px;
+    }
+    
+    .keyword-tag {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        margin: 0.2rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .keyword-risk {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        color: white;
+    }
+    
+    .keyword-positive {
+        background: linear-gradient(45deg, #51cf66, #40c057);
+        color: white;
+    }
+    
+    .timeline-item {
+        border-left: 3px solid var(--primary-color);
+        padding-left: 1rem;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -6px;
+        top: 0.5rem;
+        width: 12px;
+        height: 12px;
+        background: var(--primary-color);
+        border-radius: 50%;
+    }
+    
+    .progress-glow {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-glow::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: progress-shine 2s infinite;
+    }
+    
+    @keyframes progress-shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    .recommendation-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- 页面标题 -->
+    <h1 class="page-title floating">
+        <i class="bi bi-file-earmark-music text-glow"></i>
+        音频文件智能分析
+    </h1>
+    
+    <!-- 上传区域 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <h3 class="text-white mb-4">
+                    <i class="bi bi-cloud-upload"></i>
+                    上传音频文件进行分析
+                </h3>
+                
+                <!-- 语言切换 -->
+                <div class="language-toggle mb-4">
+                    <button type="button" class="btn btn-primary active" data-language="chinese">
+                        <i class="bi bi-translate"></i> 中文分析
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-language="english">
+                        <i class="bi bi-translate"></i> 英文分析
+                    </button>
+                </div>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <input type="hidden" id="languageMode" name="language" value="chinese">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-white">教师姓名</label>
+                            <input type="text" class="form-control modern-input" id="teacherName" name="teacher" value="演示教师">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-white">课程名称</label>
+                            <input type="text" class="form-control modern-input" id="courseName" name="course" value="演示课程">
+                        </div>
+                    </div>
+                    
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                        </div>
+                        <h4 class="text-white mb-3">拖拽音频文件到此处或点击选择</h4>
+                        <p class="text-muted mb-3">支持 MP3、WAV、OGG、M4A、FLAC 格式</p>
+                        <input type="file" id="audioFile" name="file" accept=".mp3,.wav,.ogg,.m4a,.flac" style="display: none;">
+                        <button type="button" class="btn btn-gradient" onclick="document.getElementById('audioFile').click()">
+                            <i class="bi bi-folder2-open"></i>
+                            选择文件
+                        </button>
+                    </div>
+                    
+                    <div id="selectedFile" class="mt-3" style="display: none;">
+                        <div class="glass-card p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white mb-1">已选择文件:</h6>
+                                    <p class="text-muted mb-0" id="fileName"></p>
+                                </div>
+                                <button type="submit" class="btn btn-success" id="analyzeBtn">
+                                    <i class="bi bi-play-circle"></i>
+                                    开始分析
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 分析进度 -->
+    <div id="analysisProgress" class="row mb-4" style="display: none;">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <h5 class="text-white mb-3">
+                    <i class="bi bi-gear-fill rotating"></i>
+                    正在分析音频内容...
+                </h5>
+                <div class="progress progress-glow mb-3" style="height: 8px;">
+                    <div class="progress-bar bg-gradient" role="progressbar" style="width: 0%"></div>
+                </div>
+                <div id="progressText" class="text-center text-muted">
+                    准备开始分析...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 分析结果 -->
+    <div id="analysisResults" class="analysis-results">
+        <!-- 风险评估总览 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="glass-card text-center p-4">
+                    <h5 class="text-white mb-3">风险评估</h5>
+                    <div class="risk-meter">
+                        <canvas id="riskMeter" width="200" height="200"></canvas>
+                    </div>
+                    <div id="riskLevel" class="mt-3">
+                        <span class="badge bg-success fs-6">低风险</span>
+                    </div>
+                    <div id="riskScore" class="text-white mt-2">
+                        <strong>评分: 0/100</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="glass-card p-4">
+                    <h5 class="text-white mb-3">
+                        <i class="bi bi-bar-chart"></i>
+                        风险分析详情
+                    </h5>
+                    <div class="risk-chart">
+                        <canvas id="riskBreakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 文本分析 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h5 class="text-white mb-3">
+                        <i class="bi bi-file-text"></i>
+                        语音转录文本
+                    </h5>
+                    <div id="transcriptText" class="modern-input p-3" style="min-height: 150px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <!-- 转录文本将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 关键词分析 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="glass-card p-4">
+                    <h5 class="text-white mb-3">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        风险关键词
+                    </h5>
+                    <div id="riskKeywords">
+                        <!-- 风险关键词将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="glass-card p-4">
+                    <h5 class="text-white mb-3">
+                        <i class="bi bi-check-circle"></i>
+                        正面关键词
+                    </h5>
+                    <div id="positiveKeywords">
+                        <!-- 正面关键词将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分析建议 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h5 class="text-white mb-3">
+                        <i class="bi bi-lightbulb"></i>
+                        分析建议
+                    </h5>
+                    <div id="recommendations">
+                        <!-- 建议将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分析时间线 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h5 class="text-white mb-3">
+                        <i class="bi bi-clock-history"></i>
+                        分析时间线
+                    </h5>
+                    <div id="analysisTimeline">
+                        <!-- 时间线将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 全局变量
+let analysisData = null;
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    initializeUpload();
+    initializeCharts();
+});
+
+// 初始化上传功能
+function initializeUpload() {
+    const uploadZone = document.getElementById('uploadZone');
+    const audioFile = document.getElementById('audioFile');
+    const selectedFile = document.getElementById('selectedFile');
+    const fileName = document.getElementById('fileName');
+    const uploadForm = document.getElementById('uploadForm');
+    
+    // 点击上传区域
+    uploadZone.addEventListener('click', function() {
+        audioFile.click();
+    });
+    
+    // 文件选择
+    audioFile.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            fileName.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            selectedFile.style.display = 'block';
+        }
+    });
+    
+    // 拖拽功能
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadZone.classList.add('drag-over');
+    });
+    
+    uploadZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+    });
+    
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            // 检查文件类型
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/flac'];
+            if (allowedTypes.includes(file.type) || file.name.match(/\.(mp3|wav|ogg|m4a|flac)$/i)) {
+                audioFile.files = files;
+                fileName.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                selectedFile.style.display = 'block';
+            } else {
+                alert('请选择支持的音频文件格式 (MP3, WAV, OGG, M4A, FLAC)');
+            }
+        }
+    });
+    
+    // 表单提交
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        analyzeAudio();
+    });
+}
+
+// 分析音频
+function analyzeAudio() {
+    const formData = new FormData(document.getElementById('uploadForm'));
+    const progressDiv = document.getElementById('analysisProgress');
+    const progressBar = progressDiv.querySelector('.progress-bar');
+    const progressText = document.getElementById('progressText');
+    const resultsDiv = document.getElementById('analysisResults');
+    
+    // 显示进度
+    progressDiv.style.display = 'block';
+    resultsDiv.style.display = 'none';
+    
+    // 模拟进度更新
+    let progress = 0;
+    const progressSteps = [
+        { progress: 20, text: '正在上传文件...' },
+        { progress: 40, text: '正在进行语音识别...' },
+        { progress: 60, text: '正在分析语义内容...' },
+        { progress: 80, text: '正在评估风险等级...' },
+        { progress: 100, text: '分析完成！' }
+    ];
+    
+    let stepIndex = 0;
+    const progressInterval = setInterval(() => {
+        if (stepIndex < progressSteps.length) {
+            const step = progressSteps[stepIndex];
+            progressBar.style.width = step.progress + '%';
+            progressText.textContent = step.text;
+            stepIndex++;
+        } else {
+            clearInterval(progressInterval);
+        }
+    }, 1000);
+    
+    // 发送请求
+    fetch('/api/audio/analyze', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        
+        if (data.error) {
+            alert('分析失败: ' + data.error);
+            progressDiv.style.display = 'none';
+        } else {
+            setTimeout(() => {
+                progressDiv.style.display = 'none';
+                displayResults(data);
+            }, 1000);
+        }
+    })
+    .catch(error => {
+        clearInterval(progressInterval);
+        console.error('分析失败:', error);
+        alert('分析失败，请检查网络连接');
+        progressDiv.style.display = 'none';
+    });
+}
+
+// 显示分析结果
+function displayResults(data) {
+    analysisData = data;
+    
+    // 显示结果区域
+    document.getElementById('analysisResults').style.display = 'block';
+    
+    // 更新风险评估
+    updateRiskAssessment(data.risk_assessment);
+    
+    // 更新转录文本
+    updateTranscript(data.transcript);
+    
+    // 更新关键词
+    updateKeywords(data.visualization.keyword_stats);
+    
+    // 更新图表
+    updateCharts(data.visualization);
+    
+    // 更新建议
+    updateRecommendations(data.recommendations);
+    
+    // 更新时间线
+    updateTimeline(data);
+    
+    // 滚动到结果区域
+    document.getElementById('analysisResults').scrollIntoView({
+        behavior: 'smooth'
+    });
+}
+
+// 更新风险评估
+function updateRiskAssessment(riskAssessment) {
+    const riskLevel = document.getElementById('riskLevel');
+    const riskScore = document.getElementById('riskScore');
+    
+    // 风险等级颜色映射
+    const levelColors = {
+        'low': 'success',
+        'medium': 'warning', 
+        'high': 'danger',
+        'critical': 'danger'
+    };
+    
+    const levelTexts = {
+        'low': '低风险',
+        'medium': '中风险',
+        'high': '高风险', 
+        'critical': '极高风险'
+    };
+    
+    riskLevel.innerHTML = `<span class="badge bg-${levelColors[riskAssessment.risk_level]} fs-6">${levelTexts[riskAssessment.risk_level]}</span>`;
+    riskScore.innerHTML = `<strong>评分: ${riskAssessment.risk_score.toFixed(1)}/100</strong>`;
+    
+    // 更新风险仪表盘
+    updateRiskMeter(riskAssessment.risk_score, riskAssessment.risk_color);
+}
+
+// 更新风险仪表盘
+function updateRiskMeter(score, color) {
+    const canvas = document.getElementById('riskMeter');
+    const ctx = canvas.getContext('2d');
+    
+    // 清除画布
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 80;
+    
+    // 绘制背景圆环
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 15;
+    ctx.stroke();
+    
+    // 绘制风险分数弧线
+    const angle = (score / 100) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + angle);
+    ctx.strokeStyle = color || '#28a745';
+    ctx.lineWidth = 15;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    
+    // 绘制分数文本
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText(score.toFixed(0), centerX, centerY + 8);
+}
+
+// 更新转录文本
+function updateTranscript(transcript) {
+    const transcriptDiv = document.getElementById('transcriptText');
+    transcriptDiv.innerHTML = `
+        <p class="text-white">${transcript.text}</p>
+        <div class="mt-3 text-muted">
+            <small>
+                字符数: ${transcript.length} | 词汇数: ${transcript.word_count}
+            </small>
+        </div>
+    `;
+}
+
+// 更新关键词
+function updateKeywords(keywordStats) {
+    const riskKeywordsDiv = document.getElementById('riskKeywords');
+    const positiveKeywordsDiv = document.getElementById('positiveKeywords');
+    
+    // 风险关键词
+    if (keywordStats.risk_keywords.length > 0) {
+        riskKeywordsDiv.innerHTML = keywordStats.risk_keywords.map(keyword => 
+            `<span class="keyword-tag keyword-risk">${keyword}</span>`
+        ).join('');
+    } else {
+        riskKeywordsDiv.innerHTML = '<p class="text-muted">未检测到风险关键词</p>';
+    }
+    
+    // 正面关键词
+    if (keywordStats.positive_keywords.length > 0) {
+        positiveKeywordsDiv.innerHTML = keywordStats.positive_keywords.map(keyword => 
+            `<span class="keyword-tag keyword-positive">${keyword}</span>`
+        ).join('');
+    } else {
+        positiveKeywordsDiv.innerHTML = '<p class="text-muted">未检测到正面关键词</p>';
+    }
+}
+
+// 更新建议
+function updateRecommendations(recommendations) {
+    const recommendationsDiv = document.getElementById('recommendations');
+    
+    if (recommendations.length > 0) {
+        recommendationsDiv.innerHTML = recommendations.map(rec => 
+            `<div class="recommendation-card">${rec}</div>`
+        ).join('');
+    } else {
+        recommendationsDiv.innerHTML = '<p class="text-muted">暂无特殊建议</p>';
+    }
+}
+
+// 更新时间线
+function updateTimeline(data) {
+    const timelineDiv = document.getElementById('analysisTimeline');
+    
+    const timeline = [
+        { time: '步骤 1', desc: '文件上传完成', status: 'completed' },
+        { time: '步骤 2', desc: '语音识别完成', status: 'completed' },
+        { time: '步骤 3', desc: '语义分析完成', status: 'completed' },
+        { time: '步骤 4', desc: '风险评估完成', status: 'completed' },
+        { time: '完成时间', desc: new Date().toLocaleString(), status: 'completed' }
+    ];
+    
+    timelineDiv.innerHTML = timeline.map(item => `
+        <div class="timeline-item">
+            <h6 class="text-white">${item.time}</h6>
+            <p class="text-muted mb-0">${item.desc}</p>
+        </div>
+    `).join('');
+}
+
+// 初始化图表
+function initializeCharts() {
+    // 这里可以预初始化图表
+}
+
+// 更新图表
+function updateCharts(visualization) {
+    updateRiskBreakdownChart(visualization.risk_breakdown);
+}
+
+// 更新风险分解图表
+function updateRiskBreakdownChart(riskBreakdown) {
+    const ctx = document.getElementById('riskBreakdownChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['关键词风险', '模式风险', '逻辑一致性', '情感倾向'],
+            datasets: [{
+                label: '风险分数',
+                data: [
+                    riskBreakdown.keyword_risk,
+                    riskBreakdown.pattern_risk,
+                    riskBreakdown.logic_consistency,
+                    riskBreakdown.sentiment_bias
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

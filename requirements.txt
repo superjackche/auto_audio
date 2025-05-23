@@ -1,3 +1,5 @@
+setuptools==59.8.0
+
 # 基础依赖
 numpy>=1.20.0
 pandas>=1.3.0
@@ -5,26 +7,25 @@ pyyaml>=6.0
 tqdm>=4.62.0
 
 # 音频处理
-pyaudio>=0.2.11
+pyaudio>=0.2.11  # Windows 需手动下载 whl 文件安装
 librosa>=0.8.1
 sounddevice>=0.4.4
+pydub>=0.25.1  # 用于处理和生成音频文件
 
-# 语音识别
-SpeechRecognition>=3.8.1
-pocketsphinx>=0.1.15
-openai-whisper>=1.0.0
+# 语音识别（优化版 Whisper）
+faster-whisper>=0.9.0  # 替代 openai-whisper，依赖 torch>=2.0.0
 
 # 自然语言处理
 jieba>=0.42.1
-transformers>=4.18.0
-torch>=1.10.0
+transformers>=4.18.0  # 兼容 torch>=2.0.0
+torch>=2.0.0  # 升级以兼容 faster-whisper
 spacy>=3.2.0
-bert-for-tf2>=0.14.9
-sentence-transformers>=2.2.0
+# bert-for-tf2>=0.14.9  # 与 Python 3.13 不兼容，已注释
+sentence-transformers>=2.2.0  # 可替代 bert-for-tf2 的一些功能
 
 # 机器学习
 scikit-learn>=1.0.2
-tensorflow>=2.8.0
+# tensorflow==2.9.0  # 与 Python 3.13 不兼容，已注释
 
 # API集成 (可选)
 openai>=0.27.0
@@ -35,10 +36,7 @@ flask>=2.0.1
 flask-socketio>=5.1.1
 dash>=2.3.0
 plotly>=5.6.0
-werkzeug>=2.0.1
+werkzeug>=2.0.1  # 兼容 flask>=2.0.1
 
 # 数据库
 sqlalchemy>=1.4.32
-
-# 其它工具
-setuptools>=65.0.0

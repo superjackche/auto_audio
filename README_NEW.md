@@ -159,11 +159,7 @@ pip install flask flask-socketio
 
 ## 📄 许可证
 
-本课堂语义行为实时分析系统根据 MIT 许可证授权。
-
-Copyright (c) 2025 superjackche
-
-有关完整的许可证文本，请参阅项目根目录下的 [LICENSE](LICENSE) 文件。
+MIT License
 
 ## 🤝 贡献
 

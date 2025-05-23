@@ -231,7 +231,6 @@ class BilingualTextAnalyzer:
         results['risk_score'] = min(1.0, max(0.0, risk_score)) * 100.0  # 转换为百分比
         
         return results
-    
     def _is_english_text(self, text):
         """
         判断文本是否主要是英文
@@ -244,13 +243,14 @@ class BilingualTextAnalyzer:
         """
         if not text:
             return False
-        
+            
         # 英文字符比例
         english_chars = sum(1 for c in text if ord('a') <= ord(c.lower()) <= ord('z'))
         total_chars = len(text.strip())
         
         return total_chars > 0 and english_chars / total_chars > 0.5
-      def _is_chinese_text(self, text):
+    
+    def _is_chinese_text(self, text):
         """
         判断文本是否主要是中文
         

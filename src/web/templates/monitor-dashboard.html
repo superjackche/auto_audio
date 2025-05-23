@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block title %}AI智能反馈系统 - 实时监控大屏{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modern-style.css') }}">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body {
+        background: #0a0a0a;
+        color: #ffffff;
+        overflow: hidden;
+    }
+    
+    .monitor-dashboard {
+        height: 100vh;
+        padding: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .dashboard-header {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: scanline 3s infinite;
+    }
+    
+    @keyframes scanline {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    .monitor-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .monitor-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--primary-gradient);
+        animation: progress 2s ease-in-out infinite;
+    }
+    
+    @keyframes progress {
+        0%, 100% { transform: translateX(-100%); }
+        50% { transform: translateX(100%); }
+    }
+    
+    .risk-meter {
+        text-align: center;
+        position: relative;
+    }
+    
+    .risk-score {
+        font-size: 4rem;
+        font-weight: 900;
+        margin: 1rem 0;
+        text-shadow: 0 0 20px currentColor;
+    }
+    
+    .activity-feed {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .activity-item {
+        background: rgba(255, 255, 255, 0.08);
+        border-left: 4px solid #667eea;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0 10px 10px 0;
+        transform: translateX(-100%);
+        animation: slideIn 0.5s ease forwards;
+    }
+    
+    @keyframes slideIn {
+        to { transform: translateX(0); }
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+    
+    .data-visualization {
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: blink 1s infinite;
+    }
+    
+    .status-online { background: #00ff00; }
+    .status-warning { background: #ffaa00; }
+    .status-danger { background: #ff0000; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="monitor-dashboard">
+    <!-- 头部标题 -->
+    <div class="dashboard-header">
+        <h1 class="text-white mb-2">
+            <i class="bi bi-shield-exclamation"></i>
+            AI智能反馈系统 - 实时监控大屏
+        </h1>
+        <p class="text-white-50 mb-0">课堂教学语义行为实时分析 | 意识形态风险防控</p>
+        <div class="mt-2">
+            <span class="status-indicator status-online"></span>系统在线
+            <span class="status-indicator status-warning ms-3"></span>监控中
+            <span class="ms-3">
+                <i class="bi bi-clock"></i>
+                <span id="current-time"></span>
+            </span>
+        </div>
+    </div>
+    
+    <!-- 风险评分计 -->
+    <div class="monitor-card">
+        <div class="risk-meter">
+            <h4><i class="bi bi-speedometer2"></i> 实时风险评分</h4>
+            <div class="risk-score" id="risk-score">23</div>
+            <div class="progress mb-3" style="height: 10px;">
+                <div class="progress-bar bg-success" id="risk-progress" role="progressbar" style="width: 23%"></div>
+            </div>
+            <p class="mb-1">当前状态: <span id="risk-status" class="text-success">🟢 安全</span></p>
+            <small class="text-muted">风险阈值: 低(0-30) 中(31-60) 高(61-85) 危(86-100)</small>
+        </div>
+    </div>
+    
+    <!-- 关键词监控 -->
+    <div class="monitor-card">
+        <h4><i class="bi bi-search"></i> 关键词监控</h4>
+        <div class="chart-container">
+            <canvas id="keywordChart" class="data-visualization"></canvas>
+        </div>
+        <div class="mt-3">
+            <div class="d-flex justify-content-between">
+                <span>正面词汇:</span>
+                <span class="text-success" id="positive-count">12</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>风险词汇:</span>
+                <span class="text-warning" id="risk-count">3</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 语义分析 -->
+    <div class="monitor-card">
+        <h4><i class="bi bi-graph-up"></i> 语义趋势分析</h4>
+        <div class="chart-container">
+            <canvas id="trendChart" class="data-visualization"></canvas>
+        </div>
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="bi bi-info-circle"></i>
+                显示最近10分钟的语义变化趋势
+            </small>
+        </div>
+    </div>
+    
+    <!-- 实时活动流 -->
+    <div class="monitor-card">
+        <h4><i class="bi bi-activity"></i> 实时活动流</h4>
+        <div class="activity-feed" id="activity-feed">
+            <!-- 动态内容将通过JavaScript插入 -->
+        </div>
+    </div>
+    
+    <!-- 教师行为分析 -->
+    <div class="monitor-card">
+        <h4><i class="bi bi-person-check"></i> 教师行为分析</h4>
+        <div class="chart-container">
+            <div id="behaviorAnalysis" class="data-visualization"></div>
+        </div>
+        <div class="mt-3">
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="text-info">话语频率</div>
+                    <div class="fs-5 fw-bold" id="speech-frequency">正常</div>
+                </div>
+                <div class="col-4">
+                    <div class="text-warning">情感倾向</div>
+                    <div class="fs-5 fw-bold" id="emotion-trend">中性</div>
+                </div>
+                <div class="col-4">
+                    <div class="text-success">逻辑一致性</div>
+                    <div class="fs-5 fw-bold" id="logic-consistency">95%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 实时时间更新
+function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    document.getElementById('current-time').textContent = timeString;
+}
+
+setInterval(updateTime, 1000);
+updateTime();
+
+// 模拟实时数据更新
+function updateRiskScore() {
+    const score = Math.floor(Math.random() * 40) + 10; // 10-50之间的随机分数
+    const scoreElement = document.getElementById('risk-score');
+    const progressElement = document.getElementById('risk-progress');
+    const statusElement = document.getElementById('risk-status');
+    
+    scoreElement.textContent = score;
+    progressElement.style.width = score + '%';
+    
+    // 更新状态和颜色
+    if (score <= 30) {
+        progressElement.className = 'progress-bar bg-success';
+        statusElement.innerHTML = '🟢 安全';
+        statusElement.className = 'text-success';
+        scoreElement.style.color = '#00ff88';
+    } else if (score <= 60) {
+        progressElement.className = 'progress-bar bg-warning';
+        statusElement.innerHTML = '🟡 注意';
+        statusElement.className = 'text-warning';
+        scoreElement.style.color = '#ffaa00';
+    } else {
+        progressElement.className = 'progress-bar bg-danger';
+        statusElement.innerHTML = '🔴 警告';
+        statusElement.className = 'text-danger';
+        scoreElement.style.color = '#ff3366';
+    }
+}
+
+// 更新关键词计数
+function updateKeywordCounts() {
+    const positive = Math.floor(Math.random() * 20) + 5;
+    const risk = Math.floor(Math.random() * 8) + 1;
+    
+    document.getElementById('positive-count').textContent = positive;
+    document.getElementById('risk-count').textContent = risk;
+}
+
+// 添加活动记录
+function addActivityItem() {
+    const activities = [
+        { type: 'info', icon: 'bi-mic', text: '检测到教师发言: "今天我们来学习中国古代文学..."', time: new Date() },
+        { type: 'success', icon: 'bi-check-circle', text: '语义分析正常，未发现风险内容', time: new Date() },
+        { type: 'warning', icon: 'bi-exclamation-triangle', text: '检测到争议性词汇，建议关注', time: new Date() },
+        { type: 'info', icon: 'bi-graph-up', text: '情感分析：正面情感占比85%', time: new Date() },
+        { type: 'success', icon: 'bi-shield-check', text: '逻辑一致性检查通过', time: new Date() }
+    ];
+    
+    const activity = activities[Math.floor(Math.random() * activities.length)];
+    const feed = document.getElementById('activity-feed');
+    
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <i class="${activity.icon} text-${activity.type === 'warning' ? 'warning' : activity.type === 'info' ? 'info' : 'success'}"></i>
+                <span class="ms-2">${activity.text}</span>
+            </div>
+            <small class="text-muted">${activity.time.toLocaleTimeString()}</small>
+        </div>
+    `;
+    
+    feed.insertBefore(item, feed.firstChild);
+    
+    // 限制显示的项目数量
+    while (feed.children.length > 8) {
+        feed.removeChild(feed.lastChild);
+    }
+}
+
+// 初始化图表
+function initCharts() {
+    // 关键词分析雷达图
+    const keywordCtx = document.getElementById('keywordChart').getContext('2d');
+    new Chart(keywordCtx, {
+        type: 'radar',
+        data: {
+            labels: ['正面教育', '学术规范', '价值引导', '逻辑清晰', '表达规范'],
+            datasets: [{
+                label: '当前状态',
+                data: [85, 92, 78, 95, 88],
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(102, 126, 234, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    pointLabels: { color: 'rgba(255, 255, 255, 0.8)' }
+                }
+            }
+        }
+    });
+    
+    // 趋势分析折线图
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    const trendChart = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '风险评分',
+                data: [],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            },
+            elements: {
+                point: {
+                    radius: 6,
+                    backgroundColor: '#667eea'
+                }
+            }
+        }
+    });
+    
+    // 更新趋势图数据
+    setInterval(() => {
+        const now = new Date();
+        const timeLabel = now.toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'});
+        const score = Math.floor(Math.random() * 40) + 10;
+        
+        if (trendChart.data.labels.length >= 10) {
+            trendChart.data.labels.shift();
+            trendChart.data.datasets[0].data.shift();
+        }
+        
+        trendChart.data.labels.push(timeLabel);
+        trendChart.data.datasets[0].data.push(score);
+        trendChart.update('none');
+    }, 3000);
+}
+
+// 更新教师行为分析
+function updateBehaviorAnalysis() {
+    const frequencies = ['频繁', '正常', '较少'];
+    const emotions = ['积极', '中性', '消极'];
+    
+    document.getElementById('speech-frequency').textContent = frequencies[Math.floor(Math.random() * frequencies.length)];
+    document.getElementById('emotion-trend').textContent = emotions[Math.floor(Math.random() * emotions.length)];
+    document.getElementById('logic-consistency').textContent = (Math.random() * 20 + 80).toFixed(0) + '%';
+}
+
+// 启动实时更新
+document.addEventListener('DOMContentLoaded', function() {
+    initCharts();
+    
+    // 定期更新数据
+    setInterval(updateRiskScore, 4000);
+    setInterval(updateKeywordCounts, 5000);
+    setInterval(addActivityItem, 6000);
+    setInterval(updateBehaviorAnalysis, 7000);
+    
+    // 初始数据
+    updateRiskScore();
+    updateKeywordCounts();
+    updateBehaviorAnalysis();
+    addActivityItem();
+});
+</script>
+{% endblock %}

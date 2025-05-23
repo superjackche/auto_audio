@@ -1,0 +1,757 @@
+# 意识形态安全敏感关键词列表
+# 格式: 关键词,权重(0-1)
+
+# 中文政治类敏感词
+西方民主,0.85
+普世价值,0.8
+言论自由,0.7
+自由选举,0.8
+三权分立,0.8
+宪政民主,0.85
+公民社会,0.7
+人权保障,0.7
+政体对比,0.85
+新闻自由,0.75
+民主化,0.8
+政治改革,0.8
+权力制衡,0.75
+司法独立,0.75
+多党制,0.8
+选举制度,0.75
+直接民主,0.75
+集权批判,0.85
+政治自由,0.8
+思想开放,0.7
+自由主义,0.75
+美式民主,0.8
+欧洲政体,0.7
+
+# English Political Sensitive Words
+western democracy,0.85
+universal values,0.8
+freedom of speech,0.7
+free elections,0.8
+separation of powers,0.8
+constitutional democracy,0.85
+civil society,0.7
+human rights protection,0.7
+liberal democracy,0.85
+democratic transition,0.8
+political reform,0.8
+democratic values,0.8
+checks and balances,0.75
+judicial independence,0.75
+multi-party system,0.8
+electoral system,0.75
+direct democracy,0.75
+authoritarianism criticism,0.85
+political freedom,0.8
+open ideology,0.7
+liberalism,0.8
+american democracy,0.8
+european governance,0.7
+power abuse,0.8
+political dissidents,0.85
+governance comparison,0.85
+regime criticism,0.85
+
+# 历史敏感事件
+文化大革命,0.8
+六四事件,0.95
+天安门事件,0.95
+上山下乡,0.6
+反右运动,0.8
+大跃进,0.75
+三年困难时期,0.75
+历史虚无主义,0.85
+历史翻案,0.85
+历史白皮书,0.7
+平反历史,0.8
+历史真相,0.75
+党史批判,0.85
+历史争议,0.7
+
+# English Historical Sensitive Events
+cultural revolution,0.8
+tiananmen square incident,0.95
+tiananmen protest,0.95
+june fourth,0.95
+1989 protests,0.95
+tiananmen massacre,0.95
+tank man,0.95
+rusticated youth,0.6
+anti-rightist movement,0.8
+great leap forward,0.75
+three years of hardship,0.75
+historical nihilism,0.85
+historical revisionism,0.85
+historical whitepaper,0.7
+historical justice,0.8
+historical truth,0.75
+party history criticism,0.85
+historical controversies,0.7
+historical records,0.7
+historical censorship,0.8
+collective memory,0.7
+
+# 宗教类
+宗教信仰自由,0.75
+宗教优越性,0.85
+传教活动,0.8
+极端宗教思想,0.9
+宗教压制,0.85
+宗教审查,0.85
+宗教迫害,0.85
+法轮功,0.95
+境外宗教势力,0.85
+宗教渗透,0.85
+信仰歧视,0.8
+民间信仰,0.6
+宗教指导政治,0.9
+神权政治,0.85
+宗教极端主义,0.9
+宗教自由限制,0.8
+宗教管控,0.8
+
+# English Religious Sensitive Terms
+religious freedom,0.75
+religious superiority,0.85
+missionary activities,0.8
+religious extremism,0.9
+falun gong,0.95
+religious persecution,0.85
+religious censorship,0.85
+religious repression,0.85
+foreign religious influence,0.85
+religious infiltration,0.85
+faith discrimination,0.8
+folk beliefs,0.6
+religious guidance of politics,0.9
+theocracy,0.85
+religious extremism,0.9
+religious freedom restrictions,0.8
+religious control,0.8
+cult,0.85
+banned religions,0.9
+underground churches,0.85
+house churches,0.8
+religious surveillance,0.85
+
+# 军事安全
+军事机密,0.95
+国防战略,0.85
+武器系统,0.9
+军事情报,0.95
+机密信息,0.95
+战略部署,0.85
+军事能力,0.85
+核武器,0.95
+军事基地,0.9
+军事技术,0.9
+军事演习,0.8
+军事同盟,0.8
+军事对抗,0.85
+作战计划,0.95
+军备竞赛,0.85
+军事现代化,0.8
+军事科技,0.85
+军事预算,0.8
+军事外交,0.8
+台海军情,0.9
+南海军情,0.9
+
+# English Military Security Terms
+military secrets,0.95
+defense strategy,0.85
+weapons systems,0.9
+military intelligence,0.95
+classified information,0.95
+strategic deployment,0.85
+military capabilities,0.85
+nuclear weapons,0.95
+military bases,0.9
+military technology,0.9
+military exercises,0.8
+military alliances,0.8
+military confrontation,0.85
+operational plans,0.95
+arms race,0.85
+military modernization,0.8
+military science and technology,0.85
+military budget,0.8
+military diplomacy,0.8
+taiwan strait military,0.9
+south china sea military,0.9
+pla,0.85
+military strategy,0.85
+defense systems,0.9
+strategic weapons,0.9
+hypersonic weapons,0.9
+stealth technology,0.9
+cyber warfare,0.9
+space weapons,0.9
+
+# 意识形态批判
+马克思主义批判,0.85
+社会主义制度批判,0.9
+中国特色社会主义批判,0.95
+党的领导批判,0.95
+共产党批评,0.95
+政治审查,0.85
+宣传系统,0.85
+官方话语,0.8
+党媒批判,0.85
+官方意识形态,0.8
+政治灌输,0.85
+思想控制,0.85
+政治宣传,0.8
+意识形态渗透,0.85
+政治正确,0.8
+红色教育,0.75
+思想工作,0.7
+政治表态,0.7
+思想汇报,0.7
+
+# English Ideological Criticism Terms
+criticism of marxism,0.85
+criticism of socialism,0.9
+criticism of chinese socialism,0.95
+criticism of party leadership,0.95
+communist party criticism,0.95
+authoritarian regime,0.85
+one-party rule,0.85
+political censorship,0.85
+propaganda system,0.85
+official narrative,0.8
+party media criticism,0.85
+official ideology,0.8
+political indoctrination,0.85
+thought control,0.85
+political propaganda,0.8
+ideological infiltration,0.85
+political correctness,0.8
+red education,0.75
+ideological work,0.7
+political stance,0.7
+thought reporting,0.7
+thought examination,0.8
+party doctrine,0.8
+party loyalty,0.8
+political conformity,0.85
+ideological purity,0.85
+political study sessions,0.75
+
+# 境外势力
+外国代理人,0.95
+境外NGO,0.85
+境外资金,0.85
+外国影响,0.8
+颜色革命,0.95
+政权更迭,0.95
+外国干涉,0.85
+中情局,0.85
+美国情报,0.85
+西方影响,0.85
+外国势力,0.85
+境外反华势力,0.9
+敌对势力,0.9
+间谍活动,0.95
+情报收集,0.9
+外国渗透,0.9
+政治渗透,0.9
+境外基金会,0.85
+外国智库,0.8
+外国媒体,0.8
+价值观渗透,0.85
+和平演变,0.9
+西化,0.85
+
+# English Foreign Influence Terms
+foreign agent,0.95
+foreign NGO,0.85
+foreign funding,0.85
+foreign influence,0.8
+color revolution,0.95
+regime change,0.95
+foreign interference,0.85
+CIA,0.85
+US intelligence,0.85
+western influence,0.85
+foreign forces,0.85
+anti-china foreign forces,0.9
+hostile forces,0.9
+espionage,0.95
+intelligence gathering,0.9
+foreign infiltration,0.9
+political infiltration,0.9
+foreign foundations,0.85
+foreign think tanks,0.8
+foreign media,0.8
+values infiltration,0.85
+peaceful evolution,0.9
+westernization,0.85
+fifth column,0.9
+foreign conspiracy,0.9
+subversion,0.9
+clandestine operations,0.95
+
+# 分裂国家
+台独,0.95
+港独,0.95
+藏独,0.95
+疆独,0.95
+民族分裂,0.95
+台湾独立,0.95
+香港独立,0.95
+西藏独立,0.95
+新疆独立,0.95
+分裂主义,0.95
+自由西藏,0.95
+东突厥斯坦,0.95
+台湾民主,0.85
+香港民主,0.85
+维吾尔独立,0.95
+一国两制,0.8
+国家分裂,0.95
+民族分裂主义,0.95
+领土完整,0.9
+分离主义,0.95
+独立运动,0.95
+民族自决,0.9
+联邦制,0.85
+分治,0.85
+
+# English Separatism Terms
+taiwan independence,0.95
+hong kong independence,0.95
+tibet independence,0.95
+xinjiang independence,0.95
+separatism,0.95
+free tibet,0.95
+east turkestan,0.95
+taiwanese democracy,0.85
+hong kong democracy,0.85
+uyghur independence,0.95
+one country two systems,0.8
+national division,0.95
+ethnic separatism,0.95
+territorial integrity,0.9
+secessionism,0.95
+independence movement,0.95
+self-determination,0.9
+federalism,0.85
+devolution,0.85
+autonomous regions criticism,0.9
+independence activism,0.95
+sovereignty disputes,0.9
+territorial claims,0.9
+splittism,0.95
+secession,0.95
+
+# 煽动类
+颠覆政府,0.95
+反政府,0.95
+政权更迭,0.95
+社会动荡,0.9
+政治转型,0.8
+革命,0.85
+起义,0.85
+抗议,0.8
+示威,0.8
+政治异见,0.85
+公民抗命,0.85
+社会不满,0.8
+社会抗议,0.8
+群体性事件,0.85
+街头政治,0.85
+社会运动,0.8
+非暴力抵抗,0.8
+公共抗议,0.8
+维权活动,0.8
+社会冲突,0.85
+政治反对,0.85
+集体行动,0.8
+
+# English Incitement Terms
+overthrow government,0.95
+anti-government,0.95
+regime change,0.95
+social unrest,0.9
+political transition,0.8
+revolution,0.85
+uprising,0.85
+protests,0.8
+demonstrations,0.8
+political dissent,0.85
+civil disobedience,0.85
+social discontent,0.8
+social protest,0.8
+mass incidents,0.85
+street politics,0.85
+social movements,0.8
+nonviolent resistance,0.8
+public protest,0.8
+rights defense activities,0.8
+social conflict,0.85
+political opposition,0.85
+collective action,0.8
+political agitation,0.85
+sedition,0.95
+instigation,0.9
+public disorder,0.85
+riot,0.9
+insurrection,0.95
+rabble-rousing,0.9
+
+# 教育体系批判
+教育体制批判,0.8
+教材批判,0.8
+思想政治教育批判,0.85
+灌输,0.85
+教育中的政治宣传,0.85
+洗脑,0.85
+意识形态控制,0.85
+学术自由,0.8
+教育审查,0.8
+学术独立性,0.8
+教材审查,0.8
+思想教育,0.75
+政治课批判,0.85
+学校党建,0.75
+意识形态教育,0.8
+政治正确教育,0.8
+课程政治化,0.8
+教育主权,0.75
+统一思想,0.8
+教育殖民,0.85
+教育自主权,0.8
+学术言论自由,0.8
+
+# English Education System Criticism
+criticism of education system,0.8
+criticism of textbooks,0.8
+criticism of political education,0.85
+indoctrination,0.85
+political propaganda in education,0.85
+brainwashing,0.85
+ideological control,0.85
+academic freedom,0.8
+educational censorship,0.8
+academic independence,0.8
+textbook censorship,0.8
+ideological education,0.75
+political class criticism,0.85
+party building in schools,0.75
+ideological education,0.8
+political correctness in education,0.8
+politicization of curriculum,0.8
+educational sovereignty,0.75
+unified thought,0.8
+educational colonization,0.85
+educational autonomy,0.8
+academic free speech,0.8
+thought reform,0.85
+educational independence,0.8
+critical thinking suppression,0.85
+classroom surveillance,0.85
+patriotic education criticism,0.85
+
+# Internet and Media Control
+censorship,0.85
+great firewall,0.85
+internet control,0.85
+media censorship,0.85
+banned websites,0.85
+VPN,0.8
+facebook,0.75
+twitter,0.75
+google,0.75
+youtube,0.75
+网络审查,0.85
+防火长城,0.85
+互联网管控,0.85
+媒体审查,0.85
+被禁网站,0.85
+信息控制,0.85
+网络封锁,0.85
+网络监控,0.85
+内容过滤,0.8
+言论审查,0.85
+网络自由,0.8
+媒体控制,0.85
+信息黑洞,0.8
+网络封锁,0.85
+翻墙,0.8
+自由上网,0.8
+网络管制,0.85
+社交媒体禁令,0.85
+信息屏蔽,0.85
+
+# Human Rights Issues
+人权问题,0.85
+人权侵犯,0.9
+侵犯人权,0.9
+酷刑,0.9
+任意拘留,0.9
+强迫失踪,0.9
+警察暴力,0.85
+法外处决,0.9
+政治犯,0.9
+异见人士,0.85
+活动人士逮捕,0.85
+集会自由,0.8
+强制劳动,0.9
+再教育营,0.9
+拘留营,0.9
+人权记录,0.85
+人权状况,0.85
+政治镇压,0.9
+言论自由限制,0.85
+集会自由限制,0.85
+结社自由限制,0.85
+政治迫害,0.9
+良心犯,0.9
+
+# English Human Rights Issues Extension
+human rights abuses,0.9
+human rights violations,0.9
+torture,0.9
+arbitrary detention,0.9
+forced disappearance,0.9
+police brutality,0.85
+extrajudicial execution,0.9
+political prisoner,0.9
+dissident,0.85
+activist arrest,0.85
+freedom of assembly,0.8
+forced labor,0.9
+re-education camps,0.9
+detention camps,0.9
+human rights record,0.85
+human rights conditions,0.85
+political repression,0.9
+freedom of speech restrictions,0.85
+freedom of assembly restrictions,0.85
+freedom of association restrictions,0.85
+political persecution,0.9
+prisoners of conscience,0.9
+forced confessions,0.9
+secret detention,0.9
+abduction,0.9
+illegal detention,0.9
+political trials,0.9
+unfair trials,0.85
+legal rights violation,0.85
+
+# Surveillance and Privacy
+监控,0.85
+大规模监控,0.85
+面部识别,0.8
+隐私侵犯,0.85
+监控国家,0.85
+社会信用体系,0.85
+数字威权主义,0.85
+监控技术,0.85
+公民监控,0.85
+隐私权,0.8
+大数据监控,0.85
+监控摄像头,0.8
+通信监控,0.85
+网络监控,0.85
+隐私保护,0.8
+监控社会,0.85
+个人数据收集,0.8
+生物识别,0.8
+数据隐私,0.8
+监控系统,0.85
+
+# English Surveillance and Privacy Extension
+surveillance,0.85
+mass surveillance,0.85
+facial recognition,0.8
+privacy invasion,0.85
+surveillance state,0.85
+social credit system,0.85
+digital authoritarianism,0.85
+surveillance technology,0.85
+citizen monitoring,0.85
+privacy rights,0.8
+big data surveillance,0.85
+surveillance cameras,0.8
+communications monitoring,0.85
+internet surveillance,0.85
+privacy protection,0.8
+surveillance society,0.85
+personal data collection,0.8
+biometric identification,0.8
+data privacy,0.8
+surveillance systems,0.85
+tracking,0.8
+eavesdropping,0.85
+private communication interception,0.85
+location tracking,0.8
+digital footprint,0.8
+metadata collection,0.8
+digital privacy,0.8
+surveillance capitalism,0.8
+
+# Minority Issues
+少数民族问题,0.85
+少数民族压迫,0.9
+文化灭绝,0.9
+汉化,0.85
+同化政策,0.85
+少数民族镇压,0.9
+维吾尔权利,0.9
+维吾尔拘留,0.9
+民族歧视,0.85
+汉族优越性,0.85
+民族清洗,0.9
+少数民族权利,0.85
+文化多样性,0.7
+民族政策,0.8
+民族自治,0.8
+少数民族文化,0.7
+强制同化,0.9
+文化压制,0.85
+少数民族教育,0.75
+民族冲突,0.85
+民族矛盾,0.85
+民族融合,0.75
+
+# English Minority Issues Extension
+minority issues,0.85
+minority oppression,0.9
+cultural genocide,0.9
+sinicization,0.85
+assimilation policy,0.85
+repression of minorities,0.9
+uyghur rights,0.9
+uyghur detention,0.9
+ethnic discrimination,0.85
+han supremacy,0.85
+ethnic cleansing,0.9
+minority rights,0.85
+cultural diversity,0.7
+ethnic policies,0.8
+ethnic autonomy,0.8
+minority cultures,0.7
+forced assimilation,0.9
+cultural suppression,0.85
+minority education,0.75
+ethnic conflict,0.85
+ethnic tensions,0.85
+ethnic integration,0.75
+indigenous rights,0.85
+cultural rights,0.8
+ethnic identity,0.8
+cultural preservation,0.7
+linguistic rights,0.8
+ethnic persecution,0.9
+cultural imperialism,0.85
+
+# Democracy and Elections
+民主制度,0.8
+选举欺诈,0.85
+选票作弊,0.85
+选民压制,0.85
+民主倒退,0.85
+政治多元化,0.85
+多党制,0.85
+反对党,0.85
+真正的民主,0.85
+选举操纵,0.85
+普选,0.8
+直接投票,0.8
+选举权,0.8
+政治参与,0.8
+民主进程,0.8
+政治代表性,0.8
+选民权利,0.8
+竞选活动,0.8
+民主改革,0.8
+民主赤字,0.85
+有限民主,0.8
+
+# English Democracy and Elections Extension
+democratic system,0.8
+election fraud,0.85
+ballot tampering,0.85
+voter suppression,0.85
+democratic backsliding,0.85
+political pluralism,0.85
+multi-party system,0.85
+opposition party,0.85
+genuine democracy,0.85
+election manipulation,0.85
+universal suffrage,0.8
+direct voting,0.8
+voting rights,0.8
+political participation,0.8
+democratic process,0.8
+political representation,0.8
+voter rights,0.8
+election campaigns,0.8
+democratic reform,0.8
+democratic deficit,0.85
+limited democracy,0.8
+illiberal democracy,0.85
+electoral integrity,0.85
+vote rigging,0.85
+competitive elections,0.85
+free and fair elections,0.85
+electoral transparency,0.85
+representation crisis,0.8
+
+# Corruption and Governance
+政府腐败,0.85
+权贵资本主义,0.85
+贪污腐化,0.85
+权贵阶层,0.85
+裙带关系,0.85
+权力滥用,0.85
+缺乏问责,0.85
+透明度问题,0.85
+腐败问题,0.85
+反腐败斗争批评,0.85
+政治特权,0.85
+官僚特权,0.85
+权钱交易,0.9
+司法腐败,0.85
+官商勾结,0.85
+行政腐败,0.85
+系统性腐败,0.85
+特权阶层,0.85
+廉政建设批评,0.85
+反腐行动批评,0.85
+
+# English Corruption and Governance Extension
+government corruption,0.85
+crony capitalism,0.85
+kleptocracy,0.85
+princelings,0.85
+nepotism,0.85
+power abuse,0.85
+accountability lack,0.85
+transparency problems,0.85
+corruption issues,0.85
+anti-corruption criticism,0.85
+political privilege,0.85
+bureaucratic privilege,0.85
+money politics,0.9
+judicial corruption,0.85
+government-business collusion,0.85
+administrative corruption,0.85
+systemic corruption,0.85
+privileged class,0.85
+integrity building criticism,0.85
+anti-corruption action criticism,0.85
+embezzlement,0.85
+graft,0.85
+bribery,0.85
+corrupt practices,0.85
+institutional corruption,0.85
+political corruption,0.85
+corruption networks,0.85
+patronage,0.8
+favoritism,0.8
