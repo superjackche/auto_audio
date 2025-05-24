@@ -31,7 +31,8 @@ def cleanup_project():
         'final_test.py',
         'start.bat',
         'start.ps1', 
-        'start.sh'
+        'start.sh',
+        'run.py'
     ]
     
     # 要删除的目录
@@ -84,7 +85,6 @@ def cleanup_project():
     print("清理完成！")
     print("\\n保留的核心文件:")
     print("- launch.py (主启动脚本)")
-    print("- run.py (原始启动脚本)")
     print("- requirements.txt (依赖列表)")
     print("- README.md (项目说明)")
     print("- setup.py (安装脚本)")
